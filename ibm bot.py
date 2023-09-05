@@ -1,11 +1,11 @@
 import requests
 
 # Definir la información de autenticación
-API_KEY = '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'
+API_KEY = ''
 API_URL = 'https://api.openai.com/v1/chat/completions'
 
 #consumir api de verduras
-url = 'http://127.0.0.1:4000/api/almacen'
+url = ''
 response = requests.get(url)
 verdura = response.json()
 
