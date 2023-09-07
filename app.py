@@ -7,10 +7,12 @@ import pypyodbc
 from models.ModelUser import ModelUser
 from models.ModelSupplier import ModelSupplier
 from models.ModelProduct import ModelProduct
+from models.ModelClient import ModelClient
 #entities
 from models.entities.Product import Product
 from models.entities.Supplier import Supplier
 from models.entities.User import User
+from models.entities.Client import Client
 
 
 app = Flask(__name__)
@@ -78,6 +80,22 @@ def proveedores():
         else:
             flash('Error al agregar proveedor','danger')
             return redirect(url_for('proveedores'))
+        
+@app.route('/clientes', methods=['GET', 'POST']) 
+@login_required
+def clientes():
+   #request method GET y POST
+    if request.method == 'GET':
+        clients = ModelClient.get_all(db)
+        return render_template('client.html', clients=clients)
+    if request.method == 'POST':
+        client = Client(0, request.form['ruc'], request.form['name'], request.form['lastname'], request.form['address'], request.form['email'], request.form['cellphone'])
+        if ModelClient.post(db, client):
+            flash('Cliente agregado correctamente','success')
+            return redirect(url_for('clientes'))
+        else:
+            flash('Error al agregar cliente','danger')
+            return redirect(url_for('clientes'))
         
 #metodos crud productos
 @app.route('/productos')
