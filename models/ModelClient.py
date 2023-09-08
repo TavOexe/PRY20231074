@@ -34,7 +34,7 @@ class ModelClient():
         try:
             if client.ruc != '' and client.name != '' and client.lastname != '' and client.address != '' and client.email != '' and client.cellphone != '':  
                 cursor = db.cursor()
-                cursor.execute("INSERT INTO Client (ruc, name, lastname, address, email, cellphone) VALUES ('{}','{}','{}','{}','{}')".format(client.ruc, client.name, client.lastname, client.address, client.email, client.cellphone))
+                cursor.execute("INSERT INTO Client (ruc, name, lastname, address, email, cellphone) VALUES ('{}', '{}', '{}', '{}', '{}', '{}')".format(client.ruc, client.name, client.lastname, client.address, client.email, client.cellphone))
                 db.commit()
                 return True
         except Exception as e:
