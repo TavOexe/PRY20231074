@@ -8,11 +8,7 @@ Clientes
 {% endblock customCss %}
 
 {% block body %}
-
-
 <body>
-
-
     <!-- Sidebar -->
     <div class="sidebar">
         <a href="/" class="logo">
@@ -178,10 +174,22 @@ Clientes
             </ul>
             {% endif %}
             <!-- End of Reminders-->
-
         </main>
-
     </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Inicializa la tabla como una tabla de DataTable
+            $('#proveedoresTable').DataTable();
+
+            // Agrega la funcionalidad de ordenamiento a las cabeceras de la tabla
+            $('#proveedoresTable thead th').click(function () {
+                var table = $('#proveedoresTable').DataTable();
+                var columnIndex = $(this).index();
+                table.order([columnIndex, 'asc']).draw();
+            });
+        });
+    </script>
 
     <script>
         $(document).ready(function() {
@@ -201,6 +209,23 @@ Clientes
             const t = document.createElement('script');
             t.src = "https://web-chat.global.assistant.watson.appdomain.cloud/versions/" + (window.watsonAssistantChatOptions.clientVersion || 'latest') + "/WatsonAssistantChatEntry.js";
             document.head.appendChild(t);
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            function ordenar(columna) {
+                $.get('/obtener_registros', function(data) {
+                    data.sort((a, b) => {
+                        if (typeof a[columna] === 'string') {
+                            return a[columna].localeCompare(b[columna]);
+                        } else if (typeof a[columna] === 'number') {
+                            return a[columna] - b[columna];
+                        }
+                    });
+                    mostrarRegistros(data);
+                });
+            }
         });
     </script>
     

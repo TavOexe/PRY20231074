@@ -29,7 +29,7 @@ Proveedores
             <li><a href="/ordenes_venta"><i class='bx bx-message-square-dots'></i>Ordenes Venta</a></li>
             <li><a href="/realizar_compra"><i class='bx bx-group'></i>Realizar Compra</a></li>
             <li><a href="/realizar_venta"><i class='bx bxs-dashboard'></i>Ingresar Venta</a></li>
-            <li><a href="/proveedor"><i class='bx bxs-dashboard'></i>Vendedores</a></li>
+            <li><a href="/clientes"><i class='bx bxs-dashboard'></i>Vendedores</a></li>
             <li><a href="#"><i class='bx bx-cog'></i>Settings</a></li>
         </ul>
         <ul class="side-menu">
@@ -177,6 +177,20 @@ Proveedores
         </main>
 
     </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Inicializa la tabla como una tabla de DataTable
+            $('#proveedoresTable').DataTable();
+
+            // Agrega la funcionalidad de ordenamiento a las cabeceras de la tabla
+            $('#proveedoresTable thead th').click(function () {
+                var table = $('#proveedoresTable').DataTable();
+                var columnIndex = $(this).index();
+                table.order([columnIndex, 'asc']).draw();
+            });
+        });
+    </script>
 
     <script>
         $(document).ready(function() {

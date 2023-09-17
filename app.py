@@ -65,6 +65,30 @@ def login():
 def dashboard():
     return render_template('home.html')
 
+@app.route('/inicio')
+@login_required
+def search_data(user_id):
+    query = "EXEC dbo.SEL_TOTAL_ORDERS @UserId = ?"
+    cursor = db.cursor()
+    cursor.execute(query, (user_id,))
+    dato1 = cursor.fecthone()
+    print(dato1)
+    
+    query2 = "EXEC dbo.SEL_TOTAL_AMOUNT_MONEY_ORDERS @UserId = ?"
+    cursor2 = db.cursor()
+    cursor2.execute(query2, (user_id,))
+    dato2 = cursor2.fecthone()
+    print(dato2)
+    
+    query3 = "EXEC dbo.SEL_TOTAL_AMOUNT_KGS_ORDERS @UserId = ?"
+    cursor3 = db.cursor()
+    cursor3.execute(query3, (user_id,))
+    dato3 = cursor3.fecthone()
+    print(dato3)
+    
+    return render_template('home.html', dato1=dato1, dato2=dato2, dato3=dato3)
+
+
 @app.route('/proveedores', methods=['GET', 'POST']) 
 @login_required
 def proveedores():

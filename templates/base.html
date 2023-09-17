@@ -32,6 +32,21 @@
 
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <script>
+        $(document).ready(function () {
+            // Inicializa la tabla como una tabla de DataTable
+            $('#proveedoresTable').DataTable();
+
+            // Agrega la funcionalidad de ordenamiento a las cabeceras de la tabla
+            $('#proveedoresTable thead th').click(function () {
+                var table = $('#proveedoresTable').DataTable();
+                var columnIndex = $(this).index();
+                table.order([columnIndex, 'asc']).draw();
+            });
+        });
+    </script>
     
     
     <script>

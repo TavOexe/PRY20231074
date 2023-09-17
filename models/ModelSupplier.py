@@ -34,7 +34,7 @@ class ModelSupplier():
         try:
             if supplier.ruc != '' and supplier.name != '' and supplier.lastname != '' and supplier.email != '' and supplier.cellphone != '':  
                 cursor = db.cursor()
-                cursor.execute("INSERT INTO Supplier (ruc,name, lastname,email,cellphone) VALUES ('{}','{}','{}','{}','{}')".format(supplier.ruc,supplier.name,supplier.lastname,supplier.email,supplier.cellphone))
+                cursor.execute("INSERT INTO Supplier (ruc, name, lastname, email, cellphone) VALUES ('{}','{}','{}','{}','{}')".format(supplier.ruc,supplier.name,supplier.lastname,supplier.email,supplier.cellphone))
                 db.commit()
                 return True
         except Exception as e:
