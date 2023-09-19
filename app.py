@@ -13,7 +13,7 @@ from models.entities.Product import Product
 from models.entities.Supplier import Supplier
 from models.entities.User import User
 from models.entities.Client import Client
-
+from models.entities.LastOrders import LastOrders
 
 app = Flask(__name__)
 
@@ -85,6 +85,16 @@ def search_data(user_id):
     cursor3.execute(query3, (user_id,))
     dato3 = cursor3.fecthone()
     print(dato3)
+    
+    query4 = "EXEC dbo.SEL_RECENT_PURCHASE_ORDERS @UserId = ?"
+    cursor4 = db.cursor()
+    cursor4.execute(query4, (user_id))
+    rows = cursor4.fetchall()
+    lastorders = []
+    for row in rows:
+        lastorder = LastOrders(row[0], row[1], row[2], row [3])
+        lastorders.append(lastorder)
+    print(lastorders)
     
     return render_template('home.html', dato1=dato1, dato2=dato2, dato3=dato3)
 
@@ -179,20 +189,10 @@ def realizar_venta():
     return render_template('doSell.html')
 
 #//////////////////////////////////////
-
-
-@app.route('/clientes')
-@login_required
-def proveedor():
-    return render_template('clients.html')
-
-
 #ruta para ver api de usuario
 @app.route('/api/almacen')
 def api_usuario():
     return 0
-
-
 
 @app.route('/logout')
 def logout():
@@ -204,9 +204,6 @@ def status_401(error):
 
 def status_404(error):
     return "<h1> ERROR 404 </h1> ", 404
-
-
-
 
 if __name__ == '__main__':
     app.config.from_object(config['development'])

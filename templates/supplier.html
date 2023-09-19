@@ -11,8 +11,6 @@ Proveedores
 
 
 <body>
-
-
     <!-- Sidebar -->
     <div class="sidebar">
         <a href="/" class="logo">
@@ -107,12 +105,12 @@ Proveedores
                     <table id="proveedoresTable" class="table display" style="background-color: var(--light);">
                         <thead class="table-header" style="background-color: var(--primary); color:var(--light)">
                             <tr>
-                                <th scope="col">N°</th>
-                                <th scope="col">RUC</th>
-                                <th scope="col">Nombre</th>
-                                <th scope="col">Apellido</th>
-                                <th scope="col">Correo</th>
-                                <th scope="col">Telefono</th>
+                                <th scope="col" onclick="ordenarTabla(0)">N°</th>
+                                <th scope="col" onclick="ordenarTabla(1)">RUC</th>
+                                <th scope="col" onclick="ordenarTabla(2)">Nombre</th>
+                                <th scope="col" onclick="ordenarTabla(3)">Apellido</th>
+                                <th scope="col" onclick="ordenarTabla(4)">Correo</th>
+                                <th scope="col" onclick="ordenarTabla(5)">Telefono</th>
                                 <th scope="col">Acciones</th>
                             </tr>
                         </thead>
@@ -211,6 +209,35 @@ Proveedores
             t.src = "https://web-chat.global.assistant.watson.appdomain.cloud/versions/" + (window.watsonAssistantChatOptions.clientVersion || 'latest') + "/WatsonAssistantChatEntry.js";
             document.head.appendChild(t);
         });
+    </script>
+
+    <script>
+        function ordenarTabla(columna) {
+            var tabla, filas, cambio, i, x, y, deberiasCambiar;
+            tabla = document.getElementById("proveedoresTable");
+            cambio = true;
+        
+            while (cambio) {
+                cambio = false;
+                filas = tabla.rows;
+        
+                for (i = 1; i < (filas.length - 1); i++) {
+                    deberiasCambiar = false;
+                    x = filas[i].getElementsByTagName("td")[columna];
+                    y = filas[i + 1].getElementsByTagName("td")[columna];
+        
+                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                        deberiasCambiar = true;
+                        break;
+                    }
+                }
+        
+                if (deberiasCambiar) {
+                    filas[i].parentNode.insertBefore(filas[i + 1], filas[i]);
+                    cambio = true;
+                }
+            }
+        }
     </script>
     
 </body>

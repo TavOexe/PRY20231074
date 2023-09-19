@@ -123,39 +123,24 @@ Dashboard
                         <i class='bx bx-filter'></i>
                         <i class='bx bx-search'></i>
                     </div>
-                    <table>
-                        <thead>
+                    <table id="ordenesRecientes" class="table display">
+                        <thead class="table-header" style="background-color: var(--primary); color:var(--light)">
                             <tr>
-                                <th>Encargado</th>
-                                <th>Fecha</th>
-                                <th>Estado</th>
+                                <th scope="col">N°</th>
+                                <th scope="col">Encargado</th>
+                                <th scope="col">Fecha</th>
+                                <th scope="col">Estado</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody style="color: var(--dark)">
+                            {% for lastorders in lastorders %}
                             <tr>
-                                <td>
-                                    <img src="images/profile-1.jpg">
-                                    <p>John Doe</p>
-                                </td>
-                                <td>14-08-2023</td>
-                                <td><span class="status completed">Completado</span></td>
+                                <th scope="row" id="{{lastorders.id}}"> {{lastorders.id}}</th>
+                                <td> {{lastorders.name}} </td>
+                                <td> {{lastorders.date}} </td>
+                                <td> {{lastorders.state}} </td>
                             </tr>
-                            <tr>
-                                <td>
-                                    <img src="images/profile-1.jpg">
-                                    <p>John Doe</p>
-                                </td>
-                                <td>14-08-2023</td>
-                                <td><span class="status pending">Pendiente</span></td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <img src="images/profile-1.jpg">
-                                    <p>John Doe</p>
-                                </td>
-                                <td>14-08-2023</td>
-                                <td><span class="status process">Proceso</span></td>
-                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>

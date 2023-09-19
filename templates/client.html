@@ -103,20 +103,18 @@ Clientes
                     <table id="proveedoresTable" class="table display" style="background-color: var(--light);">
                         <thead class="table-header" style="background-color: var(--primary); color:var(--light)">
                             <tr>
-                                <th scope="col">N°</th>
-                                <th scope="col">RUC</th>
-                                <th scope="col">Nombre</th>
-                                <th scope="col">Apellido</th>
-                                <th scope="col">Dirección</th>
-                                <th scope="col">Correo</th>
-                                <th scope="col">Telefono</th>
+                                <th scope="col" onclick="ordenarTabla(0)">N°</th>
+                                <th scope="col" onclick="ordenarTabla(1)">RUC</th>
+                                <th scope="col" onclick="ordenarTabla(2)">Nombre</th>
+                                <th scope="col" onclick="ordenarTabla(3)">Apellido</th>
+                                <th scope="col" onclick="ordenarTabla(4)">Dirección</th>
+                                <th scope="col" onclick="ordenarTabla(5)">Correo</th>
+                                <th scope="col" onclick="ordenarTabla(6)">Telefono</th>
                                 <th scope="col">Acciones</th>
                             </tr>
                         </thead>
                         <tbody style="color: var(--dark)">
                             {% for clients in clients %}
-
-
                             <tr>
                                 <th scope="row" id="{{clients.id}}"> {{clients.id}}</th>
                                 <td> {{clients.ruc}} </td>
@@ -213,20 +211,32 @@ Clientes
     </script>
 
     <script>
-        $(document).ready(function() {
-            function ordenar(columna) {
-                $.get('/obtener_registros', function(data) {
-                    data.sort((a, b) => {
-                        if (typeof a[columna] === 'string') {
-                            return a[columna].localeCompare(b[columna]);
-                        } else if (typeof a[columna] === 'number') {
-                            return a[columna] - b[columna];
-                        }
-                    });
-                    mostrarRegistros(data);
-                });
+        function ordenarTabla(columna) {
+            var tabla, filas, cambio, i, x, y, deberiasCambiar;
+            tabla = document.getElementById("proveedoresTable");
+            cambio = true;
+        
+            while (cambio) {
+                cambio = false;
+                filas = tabla.rows;
+        
+                for (i = 1; i < (filas.length - 1); i++) {
+                    deberiasCambiar = false;
+                    x = filas[i].getElementsByTagName("td")[columna];
+                    y = filas[i + 1].getElementsByTagName("td")[columna];
+        
+                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                        deberiasCambiar = true;
+                        break;
+                    }
+                }
+        
+                if (deberiasCambiar) {
+                    filas[i].parentNode.insertBefore(filas[i + 1], filas[i]);
+                    cambio = true;
+                }
             }
-        });
+        }
     </script>
     
 </body>
