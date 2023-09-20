@@ -103,13 +103,13 @@ Clientes
                     <table id="proveedoresTable" class="table display" style="background-color: var(--light);">
                         <thead class="table-header" style="background-color: var(--primary); color:var(--light)">
                             <tr>
-                                <th scope="col" onclick="ordenarTabla(0)">N°</th>
-                                <th scope="col" onclick="ordenarTabla(1)">RUC</th>
-                                <th scope="col" onclick="ordenarTabla(2)">Nombre</th>
-                                <th scope="col" onclick="ordenarTabla(3)">Apellido</th>
-                                <th scope="col" onclick="ordenarTabla(4)">Dirección</th>
-                                <th scope="col" onclick="ordenarTabla(5)">Correo</th>
-                                <th scope="col" onclick="ordenarTabla(6)">Telefono</th>
+                                <th scope="col" onclick="sortTable(0)">N°</th>
+                                <th scope="col" onclick="sortTable(1)">RUC</th>
+                                <th scope="col" onclick="sortTable(2)">Nombre</th>
+                                <th scope="col" onclick="sortTable(3)">Apellido</th>
+                                <th scope="col" onclick="sortTable(4)">Dirección</th>
+                                <th scope="col" onclick="sortTable(5)">Correo</th>
+                                <th scope="col" onclick="sortTable(6)">Telefono</th>
                                 <th scope="col">Acciones</th>
                             </tr>
                         </thead>
@@ -120,16 +120,79 @@ Clientes
                                 <td> {{clients.ruc}} </td>
                                 <td> {{clients.name}} </td>
                                 <td> {{clients.lastname}} </td>
-                                <td> {{clients.address}}
+                                <td> {{clients.address}} </td>
                                 <td> {{clients.email}} </td>
                                 <td> {{clients.cellphone}} </td>
-                                <td> <a href=""> borrar </a> </td>
+                                <td> <a href=""> Borrar </a> </td>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
+                    <script>
+                        function sortTable(n) {
+                            var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+                            table = document.getElementById("myTable2");
+                            switching = true;
+                            // Set the sorting direction to ascending:
+                            dir = "asc";
+                            /* Make a loop that will continue until
+                            no switching has been done: */
+                            while (switching) {
+                              // Start by saying: no switching is done:
+                              switching = false;
+                              rows = table.rows;
+                              /* Loop through all table rows (except the
+                              first, which contains table headers): */
+                              for (i = 1; i < (rows.length - 1); i++) {
+                                // Start by saying there should be no switching:
+                                shouldSwitch = false;
+                                /* Get the two elements you want to compare,
+                                one from current row and one from the next: */
+                                x = rows[i].getElementsByTagName("TD")[n];
+                                y = rows[i + 1].getElementsByTagName("TD")[n];
+                                /* Check if the two rows should switch place,
+                                based on the direction, asc or desc: */
+                                if (dir == "asc") {
+                                  if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                                    // If so, mark as a switch and break the loop:
+                                    shouldSwitch = true;
+                                    break;
+                                  }
+                                  if (Number(x.innerHTML) > Number(y.innerHTML)) {
+                                    shouldSwitch = true;
+                                    break;
+                                  }
+                                } else if (dir == "desc") {
+                                  if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                                    // If so, mark as a switch and break the loop:
+                                    shouldSwitch = true;
+                                    break;
+                                  }
+                                  if (Number(x.innerHTML) < Number(y.innerHTML)) {
+                                    shouldSwitch = true;
+                                    break;
+                                  }
+                                }
+                              }
+                              if (shouldSwitch) {
+                                /* If a switch has been marked, make the switch
+                                and mark that a switch has been done: */
+                                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                                switching = true;
+                                // Each time a switch is done, increase this count by 1:
+                                switchcount ++;
+                              } else {
+                                /* If no switching has been done AND the direction is "asc",
+                                set the direction to "desc" and run the while loop again. */
+                                if (switchcount == 0 && dir == "asc") {
+                                  dir = "desc";
+                                  switching = true;
+                                }
+                              }
+                            }
+                          }
+                    </script>
                 </div>
-
             </ul>
             {% if current_user.user_type_id == 1 %}
             <!-- End of Insights -->
@@ -174,29 +237,7 @@ Clientes
             <!-- End of Reminders-->
         </main>
     </div>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            // Inicializa la tabla como una tabla de DataTable
-            $('#proveedoresTable').DataTable();
-
-            // Agrega la funcionalidad de ordenamiento a las cabeceras de la tabla
-            $('#proveedoresTable thead th').click(function () {
-                var table = $('#proveedoresTable').DataTable();
-                var columnIndex = $(this).index();
-                table.order([columnIndex, 'asc']).draw();
-            });
-        });
-    </script>
-
-    <script>
-        $(document).ready(function() {
-          $('#proveedoresTable').DataTable();
-        });
-    </script>
-
-    <script>
-        
+    <script>        
         window.watsonAssistantChatOptions = {
             integrationID: "dee09281-19e9-4b5e-8a11-315967a9d32a", // The ID of this integration.
             region: "au-syd", // The region your integration is hosted in.
@@ -209,36 +250,6 @@ Clientes
             document.head.appendChild(t);
         });
     </script>
-
-    <script>
-        function ordenarTabla(columna) {
-            var tabla, filas, cambio, i, x, y, deberiasCambiar;
-            tabla = document.getElementById("proveedoresTable");
-            cambio = true;
-        
-            while (cambio) {
-                cambio = false;
-                filas = tabla.rows;
-        
-                for (i = 1; i < (filas.length - 1); i++) {
-                    deberiasCambiar = false;
-                    x = filas[i].getElementsByTagName("td")[columna];
-                    y = filas[i + 1].getElementsByTagName("td")[columna];
-        
-                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-                        deberiasCambiar = true;
-                        break;
-                    }
-                }
-        
-                if (deberiasCambiar) {
-                    filas[i].parentNode.insertBefore(filas[i + 1], filas[i]);
-                    cambio = true;
-                }
-            }
-        }
-    </script>
-    
 </body>
 
 {% endblock body %}

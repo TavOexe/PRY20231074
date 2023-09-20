@@ -36,7 +36,7 @@ def load_user(id):
 def index():
     logged_user = current_user
     if logged_user.is_authenticated:
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('search_data'))
     else:
         return redirect(url_for('login'))    
 
@@ -60,44 +60,48 @@ def login():
     else:
         return render_template('auth/login.html')
 
-@app.route('/inicio')
-@login_required
-def dashboard():
-    return render_template('home.html')
+#@app.route('/inicio')
+#@login_required
+#def dashboard():
+#    return render_template('home.html')
 
-@app.route('/inicio')
+@app.route('/inicio', methods=['GET', 'POST'])
 @login_required
-def search_data(user_id):
-    query = "EXEC dbo.SEL_TOTAL_ORDERS @UserId = ?"
-    cursor = db.cursor()
-    cursor.execute(query, (user_id,))
-    dato1 = cursor.fecthone()
-    print(dato1)
+def search_data():
+    user_id = current_user.id
+    if request.method == "GET":       
+        query = "EXEC dbo.SEL_TOTAL_ORDERS @AccountId = ?"
+        cursor = db.cursor()
+        cursor.execute(query, (user_id,))
+        dato1 = cursor.fetchone()
+        cursor.close()
+        print(dato1)
     
-    query2 = "EXEC dbo.SEL_TOTAL_AMOUNT_MONEY_ORDERS @UserId = ?"
-    cursor2 = db.cursor()
-    cursor2.execute(query2, (user_id,))
-    dato2 = cursor2.fecthone()
-    print(dato2)
+        query2 = "EXEC dbo.SEL_TOTAL_AMOUNT_MONEY_ORDERS @AccountId = ?"
+        cursor2 = db.cursor()
+        cursor2.execute(query2, (user_id,))
+        dato2 = cursor2.fetchone()
+        cursor2.close()
+        print(dato2)
     
-    query3 = "EXEC dbo.SEL_TOTAL_AMOUNT_KGS_ORDERS @UserId = ?"
-    cursor3 = db.cursor()
-    cursor3.execute(query3, (user_id,))
-    dato3 = cursor3.fecthone()
-    print(dato3)
+        query3 = "EXEC dbo.SEL_TOTAL_AMOUNT_KGS_ORDERS @AccountId = ?"
+        cursor3 = db.cursor()
+        cursor3.execute(query3, (user_id,))
+        dato3 = cursor3.fetchone()
+        cursor3.close()
+        print(dato3)
     
-    query4 = "EXEC dbo.SEL_RECENT_PURCHASE_ORDERS @UserId = ?"
-    cursor4 = db.cursor()
-    cursor4.execute(query4, (user_id))
-    rows = cursor4.fetchall()
-    lastorders = []
-    for row in rows:
-        lastorder = LastOrders(row[0], row[1], row[2], row [3])
-        lastorders.append(lastorder)
-    print(lastorders)
-    
-    return render_template('home.html', dato1=dato1, dato2=dato2, dato3=dato3)
-
+        query4 = "EXEC dbo.SEL_RECENT_PURCHASE_ORDERS @AccountId = ?"
+        cursor4 = db.cursor()
+        cursor4.execute(query4, (user_id,))
+        rows = cursor4.fetchall()
+        lastorders = []
+        for row in rows:
+            lastorder = LastOrders(row[0], row[1], row[2], row [3])
+            lastorders.append(lastorder)
+        print(lastorders)
+        cursor4.close()
+        return render_template('home.html', dato1=dato1, dato2=dato2, dato3=dato3, lastorders=lastorders)
 
 @app.route('/proveedores', methods=['GET', 'POST']) 
 @login_required
