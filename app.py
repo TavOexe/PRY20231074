@@ -14,6 +14,7 @@ from models.entities.Supplier import Supplier
 from models.entities.User import User
 from models.entities.Client import Client
 from models.entities.LastOrders import LastOrders
+from models.entities.ProductxCategory import ProductxCategory
 
 app = Flask(__name__)
 
@@ -50,7 +51,7 @@ def login():
         if logged_user is not None:
             if logged_user.password:
                 login_user(logged_user)
-                return redirect(url_for('dashboard'))
+                return redirect(url_for('search_data'))
             else:
                 flash('Contraseña invalida...')
                 return render_template('auth/login.html')
@@ -69,27 +70,41 @@ def login():
 @login_required
 def search_data():
     user_id = current_user.id
-    if request.method == "GET":       
-        query = "EXEC dbo.SEL_TOTAL_ORDERS @AccountId = ?"
-        cursor = db.cursor()
-        cursor.execute(query, (user_id,))
-        dato1 = cursor.fetchone()
-        cursor.close()
-        print(dato1)
+    if request.method == "GET":
+        def execute_query(query):
+            cursor = db.cursor()
+            cursor.execute(query, (user_id,))
+            result = cursor.fetchone()
+            cursor.close()
+            return result[0] if result is not None else None
+
+        dato1 = execute_query("EXEC dbo.SEL_TOTAL_ORDERS @AccountId = ?")
+        dato2 = execute_query("EXEC dbo.SEL_TOTAL_AMOUNT_MONEY_ORDERS @AccountId = ?")
+        dato3 = execute_query("EXEC dbo.SEL_TOTAL_AMOUNT_KGS_ORDERS @AccountId = ?")
+
+        #query = "EXEC dbo.SEL_TOTAL_ORDERS @AccountId = ?"
+        #cursor = db.cursor()
+        #cursor.execute(query, (user_id,))
+        #dato1 = cursor.fetchone()
+        #cursor.close()
+        #dato1 = dato1[0] if dato1 else None
+        #print(dato1)
     
-        query2 = "EXEC dbo.SEL_TOTAL_AMOUNT_MONEY_ORDERS @AccountId = ?"
-        cursor2 = db.cursor()
-        cursor2.execute(query2, (user_id,))
-        dato2 = cursor2.fetchone()
-        cursor2.close()
-        print(dato2)
+        #query2 = "EXEC dbo.SEL_TOTAL_AMOUNT_MONEY_ORDERS @AccountId = ?"
+        #cursor2 = db.cursor()
+        #cursor2.execute(query2, (user_id,))
+        #dato2 = cursor2.fetchone()
+        #cursor2.close()
+        #dato2 = float(dato2[0]) if dato2 is not None else None
+        #print(dato2)
     
-        query3 = "EXEC dbo.SEL_TOTAL_AMOUNT_KGS_ORDERS @AccountId = ?"
-        cursor3 = db.cursor()
-        cursor3.execute(query3, (user_id,))
-        dato3 = cursor3.fetchone()
-        cursor3.close()
-        print(dato3)
+        #query3 = "EXEC dbo.SEL_TOTAL_AMOUNT_KGS_ORDERS @AccountId = ?"
+        #cursor3 = db.cursor()
+        #cursor3.execute(query3, (user_id,))
+        #dato3 = cursor3.fetchone()
+        #cursor3.close()
+        #dato3 = float(dato3[0]) if dato3 is not None else None
+        #print(dato3)
     
         query4 = "EXEC dbo.SEL_RECENT_PURCHASE_ORDERS @AccountId = ?"
         cursor4 = db.cursor()
@@ -99,9 +114,20 @@ def search_data():
         for row in rows:
             lastorder = LastOrders(row[0], row[1], row[2], row [3])
             lastorders.append(lastorder)
-        print(lastorders)
+        #print(lastorders)
         cursor4.close()
-        return render_template('home.html', dato1=dato1, dato2=dato2, dato3=dato3, lastorders=lastorders)
+        
+        query5 = "EXEC dbo.SEL_PRODUCTS_SELLED @AccountId = ?"
+        cursor5 = db.cursor()
+        cursor5.execute(query5, (user_id,))
+        rows2 = cursor5.fetchall()
+        productsxcategory = []
+        for row in rows2:
+            productsxcategory2 = ProductxCategory(row[0], row[1], row[2])
+            productsxcategory.append(productsxcategory2)
+        cursor5.close()
+        
+        return render_template('home.html', dato1=dato1, dato2=dato2, dato3=dato3, lastorders=lastorders, productsxcategory=productsxcategory)
 
 @app.route('/proveedores', methods=['GET', 'POST']) 
 @login_required
