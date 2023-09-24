@@ -41,3 +41,15 @@ class ModelSupplier():
             db.rollback()
             print(e)
             return False
+        
+    @classmethod
+    def delete(self, db, suppliers_id):
+        try:
+            cursor = db.cursor()
+            cursor.execute("DELETE FROM Supplier WHERE Id = '{}' ".format(suppliers_id))
+            db.commit()
+            return True
+        except Exception as e:
+            db.rollback()
+            print(e)
+            return False

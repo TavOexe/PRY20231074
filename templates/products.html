@@ -123,7 +123,11 @@ Productos
                                 <td> {{products.name}} </td>
                                 <td> {{products.description}} </td>
                                 <td> <img src="{{products.image}}" width="50" height="50"  alt=""> </td>
-                                <td> <a href=""> borrar </a> </td>
+                                <form action="/borrar_producto" method="post">
+                                    <input type="hidden" name="products_id" value="{{ products.id }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-primary">Borrar</button>
+                                </form>
                             </tr>
                             {% endfor %}
                         </tbody>

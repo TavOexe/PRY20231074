@@ -123,7 +123,13 @@ Clientes
                                 <td> {{clients.address}} </td>
                                 <td> {{clients.email}} </td>
                                 <td> {{clients.cellphone}} </td>
-                                <td> <a href=""> Borrar </a> </td>
+                                <td>
+                                    <form action="/borrar_cliente" method="post">
+                                        <input type="hidden" name="cliente_id" value="{{ clients.id }}">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-primary">Borrar</button>
+                                    </form>
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>

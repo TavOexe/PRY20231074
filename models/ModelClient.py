@@ -41,3 +41,16 @@ class ModelClient():
             db.rollback()
             print(e)
             return False
+        
+    @classmethod
+    def delete(self, db, cliente_id):
+        print(cliente_id)
+        try:
+            cursor = db.cursor()
+            cursor.execute("DELETE FROM Client WHERE Id = '{}' ".format(cliente_id))
+            db.commit()
+            return True
+        except Exception as e:
+            db.rollback()
+            print(f"Error al eliminar el cliente: {e}")
+            return False

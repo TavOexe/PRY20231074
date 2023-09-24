@@ -125,7 +125,13 @@ Proveedores
                                 <td> {{suppliers.lastname }} </td>
                                 <td> {{suppliers.email}} </td>
                                 <td> {{suppliers.cellphone}} </td>
-                                <td> <a href=""> Borrar </a> </td>
+                                <td>
+                                    <form action="/borrar_proveedor" method="post">
+                                        <input type="hidden" name="suppliers_id" value="{{ suppliers.id }}">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-primary">Borrar</button>
+                                    </form>
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>

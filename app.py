@@ -145,6 +145,17 @@ def proveedores():
             flash('Error al agregar proveedor','danger')
             return redirect(url_for('proveedores'))
         
+@app.route('/borrar_proveedor', methods=['POST'])
+@login_required
+def borrar_proveedor():
+    suppliers_id = request.form['suppliers_id']
+    if ModelClient.delete(db, suppliers_id):
+        flash('Proveeor eliminado correctamente', 'success')
+    else:
+        flash('Error al eliminar proveedor', 'danger')
+    
+    return redirect(url_for('proveedores'))
+        
 @app.route('/clientes', methods=['GET', 'POST']) 
 @login_required
 def clientes():
@@ -160,6 +171,17 @@ def clientes():
         else:
             flash('Error al agregar cliente','danger')
             return redirect(url_for('clientes'))
+        
+@app.route('/borrar_cliente', methods=['POST'])
+@login_required
+def borrar_cliente():
+    cliente_id = request.form['cliente_id']
+    if ModelClient.delete(db, cliente_id):
+        flash('Cliente eliminado correctamente', 'success')
+    else:
+        flash('Error al eliminar cliente', 'danger')
+    
+    return redirect(url_for('clientes'))
         
 #metodos crud productos
 @app.route('/productos')
@@ -177,6 +199,16 @@ def productos():
             flash('Error al agregar producto','danger')
             return redirect(url_for('productos'))
 
+@app.route('/borrar_producto', methods=['POST'])
+@login_required
+def borrar_producto():
+    products_id = request.form['products_id']
+    if ModelProduct.delete(db, products_id):
+        flash('Producto eliminado correctamente', 'success')
+    else:
+        flash('Error al eliminar producto', 'danger')
+    
+    return redirect(url_for('productos'))
 
 
 
