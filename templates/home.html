@@ -22,11 +22,9 @@ Dashboard
             <li><a href="/productos"><i class='bx bxs-dashboard'></i>Productos </a></li>
             <li><a href="/ordenes_compra"><i class='bx bx-store-alt'></i>Ordenes Compra</a></li>
             <li><a href="/inventario"><i class='bx bx-store-alt'></i>Inventario</a></li>
-            <li><a href="/analytics"><i class='bx bx-analyse'></i>Analytics</a></li>
+            <li><a href="/estadisticas"><i class='bx bx-analyse'></i>Analytics</a></li>
             <li><a href="/ordenes_venta"><i class='bx bx-message-square-dots'></i>Ordenes Venta</a></li>
-            <li><a href="/realizar_compra"><i class='bx bx-group'></i>Realizar Compra</a></li>
-            <li><a href="/realizar_venta"><i class='bx bxs-dashboard'></i>Ingresar Venta</a></li>
-            <li><a href="/clientes"><i class='bx bxs-dashboard'></i>Vendedores</a></li>
+            <li><a href="/clientes"><i class='bx bxs-dashboard'></i>Clientes</a></li>
             <li><a href="#"><i class='bx bx-cog'></i>Settings</a></li>
         </ul>
         <ul class="side-menu">
@@ -62,7 +60,13 @@ Dashboard
                     <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"></path>
                     <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"></path>
                   </svg>
-                <a > {{current_user.name}} {{current_user.lastname}} </a>
+                  <a> {{current_user.name}} {{current_user.lastname}} </a>
+                  {% if current_user.user_type_id == 1 %}
+                      <a >Analista</a>                    
+                  {% endif %}
+                  {% if current_user.user_type_id == 2 %}
+                      <a >Operario</a>                    
+                  {% endif %}
             </a>
         </nav>
 

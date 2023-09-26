@@ -33,6 +33,6 @@ class ModelUser():
 
 
 
-#probar una contraseña de 
+#probar una contraseña de un usuario
 
             

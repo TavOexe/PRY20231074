@@ -10,8 +10,11 @@ class User(UserMixin):
         self.email = email
         self.password = password
         self.cellphone = cellphone
-
+    
     @classmethod
     def check_password(self,hashed_password ,password):
         return check_password_hash(hashed_password, password)
+
+hashed_password = generate_password_hash('1234')
+print(hashed_password) 
     

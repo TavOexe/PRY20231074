@@ -11,8 +11,6 @@ Orden de compra
 
 
 <body>
-
-
     <!-- Sidebar -->
     <div class="sidebar">
         <a href="/" class="logo">
@@ -27,9 +25,7 @@ Orden de compra
             <li><a href="/inventario"><i class='bx bx-store-alt'></i>Inventario</a></li>
             <li><a href="/analytics"><i class='bx bx-analyse'></i>Analytics</a></li>
             <li><a href="/ordenes_venta"><i class='bx bx-message-square-dots'></i>Ordenes Venta</a></li>
-            <li><a href="/realizar_compra"><i class='bx bx-group'></i>Realizar Compra</a></li>
-            <li><a href="/realizar_venta"><i class='bx bxs-dashboard'></i>Ingresar Venta</a></li>
-            <li><a href="/proveedor"><i class='bx bxs-dashboard'></i>Vendedores</a></li>
+            <li><a href="/clientes"><i class='bx bxs-dashboard'></i>Vendedores</a></li>
             <li><a href="#"><i class='bx bx-cog'></i>Settings</a></li>
         </ul>
         <ul class="side-menu">
@@ -108,23 +104,32 @@ Orden de compra
                         <thead class="table-header" style="background-color: var(--primary); color:var(--light)">
                             <tr>
                                 <th scope="col">N°</th>
-                                <th scope="col">Id</th>
-                                <th scope="col">Description</th>
-                                <th scope="col">Imagen</th>
+                                <th scope="col">Fecha</th>
+                                <th scope="col">Formato</th>
+                                <th scope="col">Cantidad total</th>
+                                <th scope="col">Observaciones</th>
+                                <th scope="col">Cantidad perdida</th>
+                                <th scope="col">Responsable</th>
+                                <th scope="col">Estado </th>
+                                <th scope="col">Proveedor</th>
+                                <th scope="col">Acciones</th>
                             </tr>
                         </thead>
                         <tbody style="color: var(--dark)">
-                            {% for suppliers in suppliers %}
+                            {% for orders in orders %}
 
 
                             <tr>
-                                <th scope="row" id="{{suppliers.id}}"> {{suppliers.id}}</th>
-                                <td> {{suppliers.ruc}} </td>
-                                <td> {{suppliers.name}} </td>
-                                <td> {{suppliers.lastname }} </td>
-                                <td> {{suppliers.email}} </td>
-                                <td> {{suppliers.cellphone}} </td>
-                                <td> <a href=""> borrar </a> </td>
+                                <th scope="row" id="{{orders.id}}"> {{orders.id}}</th>
+                                <td> {{orders.entrydate}} </td>
+                                <td> {{orders.format}} </td>
+                                <td> {{orders.totalquantity }} </td>
+                                <td> {{orders.comments}} </td>
+                                <td> {{orders.quantitylost}} </td>
+                                <td> {{orders.account_id}} </td>
+                                <td class="text-warning"> {{orders.state}}    </td>
+                                <td> {{orders.supplier_id}} </td>
+                                <td> <a href=""> Asignar Calidades </a> </td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -132,51 +137,123 @@ Orden de compra
                 </div>
 
             </ul>
-            {% if current_user.user_type_id == 1 %}
+
             <!-- End of Insights -->
-            <h2 style="color:var(--dark)"> Agregar proveedor</h2>
+            <h2 style="color:var(--dark)"> Nueva orden de compra</h2>
             <ul class="insights" style="background-color:var(--light)">
 
-                <form action="/proveedores" method="POST" style="color:var(--dark)">
-                    <div class="form-group">
-                        <label> RUC </label>
-                        <input type="number" class="form-control" name="ruc" placeholder="101231241320">
-                    </div>
+                <form action="/ordenes_compra" method="POST" style="color:var(--dark)">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    
                     <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="inputEmail4"> Nombres </label>
-                            <input type="text" class="form-control" name="name" placeholder="Gustavo">
+                        <div class="form-group col">
+                            <label for="fecha" class="text">Fecha:</label>
+                            <input type="date" class="input-group-text" name="entrydate" required>
+                        </div>
+                    </div>                    
+                    <div class="form-row">
+                        <div class="form-group col">
+                            <label for="inputPassword4">Observaciones </label>
+                            <input type="text" class="form-control" name="comments" placeholder="text">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="inputEmail4"> Formato </label>
+                            <input type="text" class="form-control" name="format" placeholder="Jabas">
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="inputPassword4">Cantidad total</label>
+                            <input type="number" class="form-control" name="totalquantity" placeholder="10">
+                        </div>
+                        
+                        <div class="form-group col">
+                            <label for="inputPassword4">Cantidad perdida </label>
+                            <input type="number" class="form-control" name="quantitylost" placeholder="10">
                         </div>
                         <div class="form-group col-md-6">
-                            <label for="inputPassword4">Apellidos</label>
-                            <input type="text" class="form-control" name="lastname" placeholder="Chavez">
+                            <label for="inputPassword4">Responsable </label>
+                            <select class="form-select" name="account_id"  aria-label="Disabled select example" disabled>
+                                <option value="{{current_user.id}}" selected>{{current_user.name}} {{current_user.lastname}} </option>
+                            </select>
+
+                            <input type="hidden" class="form-control" name="account_id" value="{{current_user.id}}">
+
                         </div>
+                        
+
+                        <div class="form-group col-md-6">
+                            <label for="inputPassword4">Proveedor </label>
+                            <select class="form-select" aria-label="Proveedores" name="supplier_id" required>
+                                <option selected>Selecciona Proveedor</option>
+                                {% for supplier in supplier %}
+                                <option value="{{ supplier.id }}" >{{ supplier.name }} {{ supplier.lastname }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
                     </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cantidad (kg)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productos">
+                            <tr>
+                                <td>
+                                    <select class="form-select" name="producto_id[]">
+                                        {% for products in products %}
+                                        <option value="{{ products.id }}">{{ products.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <input  style="margin-left: 10px;" class="form-select" type="number" name="cantidad[]" required>
+                                </td>
+                                <td>
+                                    <button type="button" style="margin-left: 15px;" class="btn btn-primary btn-sm" id="agregarProducto">Agregar Producto</button>
+                                </td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                   
+                    <button type="submit" style="margin-top: 10px;" class="btn btn-success" id="agregarButton">Crear Orden</button>
 
-                    <div class="form-group">
-                        <label for="inputAddress2">Correo</label>
-                        <input type="email" class="form-control" name="email" placeholder="ejemplo@gmail.com">
-
-                        <label for="inputCity">Numero de telefono</label>
-                        <input type="number" class="form-control" name="cellphone" placeholder="1234567">
-
-                    </div>
-                    <div>
-
-                    </div>
-                    <button type="submit" class="btn btn-primary" id="agregarButton">Agregar</button>
                 </form>
             </ul>
-            {% endif %}
+         
+            
             <!-- End of Reminders-->
 
         </main>
 
     </div>
-
     <script>
-        document.getElementById("myBtn").disabled = true;
+        // Data Picker Initialization
+       
+        var agregarProductoButton = document.getElementById("agregarProducto");
+        var productosContainer = document.getElementById("productos");
+
+        agregarProductoButton.addEventListener("click", function () {
+            var newRow = `<tr>
+                <td>
+                    <select class="form-select" name="producto_id[]">
+                        {% for products in products %}
+                        <option value="{{ products.id }}">{{ products.name }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <input style="margin-left: 10px;" type="number" class="form-select"  name="cantidad[]" required>
+                </td>
+            </tr>`;
+            productosContainer.insertAdjacentHTML("beforeend", newRow);
+        });
+    </script>
+    
+    <script>
+        
         window.watsonAssistantChatOptions = {
             integrationID: "dee09281-19e9-4b5e-8a11-315967a9d32a", // The ID of this integration.
             region: "au-syd", // The region your integration is hosted in.
@@ -188,7 +265,8 @@ Orden de compra
             t.src = "https://web-chat.global.assistant.watson.appdomain.cloud/versions/" + (window.watsonAssistantChatOptions.clientVersion || 'latest') + "/WatsonAssistantChatEntry.js";
             document.head.appendChild(t);
         });
-    </script>
+    </script>   
+
 </body>
 
 {% endblock body %}

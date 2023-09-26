@@ -3,17 +3,20 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from flask_wtf.csrf import CSRFProtect
 from config import config
 import pypyodbc
+import datetime
 #models 
 from models.ModelUser import ModelUser
 from models.ModelSupplier import ModelSupplier
 from models.ModelProduct import ModelProduct
 from models.ModelClient import ModelClient
+from models.ModelPurchaseOrder import ModelPurchaseOrder
+from models.ModelOrderXproduct import ModelOrderXproduct
 #entities
 from models.entities.Product import Product
 from models.entities.Supplier import Supplier
 from models.entities.User import User
 from models.entities.Client import Client
-
+from models.entities.PurchaseOrder import PurchaseOrder
 
 app = Flask(__name__)
 
@@ -46,7 +49,6 @@ def login():
     if request.method == 'POST':
         user = User(0, '', '', '', request.form['email'], request.form['password'], '')
         logged_user = ModelUser.login(db, user)
-
         if logged_user is not None:
             if logged_user.password:
                 login_user(logged_user)
@@ -59,6 +61,7 @@ def login():
             return render_template('auth/login.html')
     else:
         return render_template('auth/login.html')
+
 
 @app.route('/inicio')
 @login_required
@@ -98,7 +101,7 @@ def clientes():
             return redirect(url_for('clientes'))
         
 #metodos crud productos
-@app.route('/productos')
+@app.route('/productos', methods=['GET', 'POST'])
 @login_required
 def productos():
     if request.method == 'GET':
@@ -119,10 +122,37 @@ def productos():
 
 
 #METODOS CRUD ORDENES DE COMPRA
-@app.route('/ordenes_compra')
+@app.route('/ordenes_compra', methods=['GET', 'POST'])
 @login_required
-def ver_ord_comp():
-    return render_template('BuyOrders.html')
+def orden_compra():
+    if request.method == 'GET':
+        products = ModelProduct.get_all(db)
+        orders = ModelPurchaseOrder.get_all(db)
+        supplier = ModelSupplier.get_all(db)
+        return render_template('BuyOrders.html', products=products, orders=orders, supplier=supplier)
+    if request.method == 'POST':
+        #obtener la fecha actual
+        #fecha_actual = datetime.datetime.now()
+        order = PurchaseOrder('',request.form['entrydate'], request.form['format'], request.form['totalquantity'], request.form['comments'], request.form['quantitylost'], request.form['account_id'], 'Pendiente', request.form['supplier_id'])
+        products_ids = request.form.getlist('producto_id[]')
+        cantidades = request.form.getlist('cantidad[]')
+        print(order.id)
+        if ModelPurchaseOrder.post(db,order):
+            #si la lista de productos no esta vacia
+            if products_ids:
+                for producto_id, cantidad in zip(products_ids, cantidades):
+                    ModelOrderXproduct.agregar_producto_a_orden(db, order.id , producto_id, cantidad)
+                    print( "producto agregado correctamente" )
+            
+            flash('Orden agregada correctamente','success')
+            return redirect(url_for('orden_compra'))
+        else:
+            flash('Error al agregar orden','danger')
+            return redirect(url_for('orden_compra'))
+      
+
+
+
 
 @app.route('/realizar_compra')
 @login_required
@@ -143,24 +173,8 @@ def analytics():
     return render_template('analytics.html')
 
 
-#METODOS CRUD ORDENES DE VENTA
-@app.route('/ordenes_venta')
-@login_required
-def ver_ord_ven():
-    return render_template('SellOrders.html')
-
-@app.route('/realizar_venta')
-@login_required
-def realizar_venta():
-    return render_template('doSell.html')
 
 #//////////////////////////////////////
-
-
-@app.route('/clientes')
-@login_required
-def proveedor():
-    return render_template('clients.html')
 
 
 #ruta para ver api de usuario

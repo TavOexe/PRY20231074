@@ -4,8 +4,8 @@ class Config:
 class DevelopmentConfig (Config):
     DEBUG = True
     DRIVER = 'SQL Server'
-    SERVER = "LAPTOP-KU7B7VQF"
-    DATABASE = "agrodbPrueba"
+    SERVER = "DESKTOP-NT6FMGV\SQLEXPRESS"
+    DATABASE = "agrodb"
     #uid = 'gmanuser'
     #pwd = '#Gc949194518'
     
