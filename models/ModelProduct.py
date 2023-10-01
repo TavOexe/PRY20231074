@@ -54,4 +54,23 @@ class ModelProduct():
             print(e)
             return False
         
+    @classmethod
+    def updateproduct(cls, db, product_id):
+        try:
+            cursor = db.cursor()
+            cursor.execute("SELECT Estado FROM Product WHERE Id = ?", (product_id,))
+            estado_actual = cursor.fetchone()
+        
+            if estado_actual:
+                nuevo_estado = "No Activo" if estado_actual[0] == "Activo" else "Activo"
+                cursor.execute("UPDATE Product SET Estado = ? WHERE Id = ?", (nuevo_estado, product_id))
+                db.commit()
+                return True
+            else:
+                return False  # El cliente no fue encontrado
+        except Exception as e:
+            db.rollback()
+            print(f"Error al actualizar el estado del producto: {e}")
+            return False
+        
         

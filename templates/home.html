@@ -95,7 +95,7 @@ Dashboard
                     <i class='bx bx-calendar-check'></i>
                     <span class="info">
                         <h3>
-                            1,074
+                            {{ dato1 }}
                         </h3>
                         <p>Ordenes realizadas</p>
                     </span>
@@ -103,7 +103,7 @@ Dashboard
                 <li><i class='bx bx-show-alt'></i>
                     <span class="info">
                         <h3>
-                            3,944
+                            {{ dato3 }} Kg
                         </h3>
                         <p>KG calculados</p>
                     </span>
@@ -111,7 +111,7 @@ Dashboard
                 <li><i class='bx bx-dollar-circle'></i>
                     <span class="info">
                         <h3>
-                            $6,742
+                            S/{{ dato2 }}
                         </h3>
                         <p>Total ventas</p>
                     </span>
@@ -127,39 +127,24 @@ Dashboard
                         <i class='bx bx-filter'></i>
                         <i class='bx bx-search'></i>
                     </div>
-                    <table>
-                        <thead>
+                    <table id="ordenesRecientes" class="table display">
+                        <thead class="table-header" style="background-color: var(--primary); color:var(--light)">
                             <tr>
-                                <th>Encargado</th>
-                                <th>Fecha</th>
-                                <th>Estado</th>
+                                <th scope="col">N°</th>
+                                <th scope="col">Encargado</th>
+                                <th scope="col">Fecha</th>
+                                <th scope="col">Estado</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody style="color: var(--dark)">
+                            {% for lastorders in lastorders %}
                             <tr>
-                                <td>
-                                    <img src="images/profile-1.jpg">
-                                    <p>John Doe</p>
-                                </td>
-                                <td>14-08-2023</td>
-                                <td><span class="status completed">Completado</span></td>
+                                <th scope="row" id="{{lastorders.id}}"> {{lastorders.id}}</th>
+                                <td> {{lastorders.name}} </td>
+                                <td> {{lastorders.date}} </td>
+                                <td> {{lastorders.state}} </td>
                             </tr>
-                            <tr>
-                                <td>
-                                    <img src="images/profile-1.jpg">
-                                    <p>John Doe</p>
-                                </td>
-                                <td>14-08-2023</td>
-                                <td><span class="status pending">Pendiente</span></td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <img src="images/profile-1.jpg">
-                                    <p>John Doe</p>
-                                </td>
-                                <td>14-08-2023</td>
-                                <td><span class="status process">Proceso</span></td>
-                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
@@ -168,33 +153,28 @@ Dashboard
                 <div class="reminders">
                     <div class="header">
                         <i class='bx bx-note'></i>
-                        <h3>Recordatorios</h3>
+                        <h3>Datos de Productos Vendidos</h3>
                         <i class='bx bx-filter'></i>
                         <i class='bx bx-plus'></i>
                     </div>
-                    <ul class="task-list">
-                        <li class="completed">
-                            <div class="task-title">
-                                <i class='bx bx-check-circle'></i>
-                                <p>Inicio de operaciones</p>
-                            </div>
-                            <i class='bx bx-dots-vertical-rounded'></i>
-                        </li>
-                        <li class="completed">
-                            <div class="task-title">
-                                <i class='bx bx-check-circle'></i>
-                                <p>Analisis de inventario</p>
-                            </div>
-                            <i class='bx bx-dots-vertical-rounded'></i>
-                        </li>
-                        <li class="not-completed">
-                            <div class="task-title">
-                                <i class='bx bx-x-circle'></i>
-                                <p>Ventas esperadas</p>
-                            </div>
-                            <i class='bx bx-dots-vertical-rounded'></i>
-                        </li>
-                    </ul>
+                    <table id="productosVendidos" class="table display">
+                        <thead class="table-header" style="background-color: var(--primary); color:var(--light)">
+                            <tr>
+                                <th scope="col">Producto</th>
+                                <th scope="col">Calidad</th>
+                                <th scope="col">Cifra Vendida</th>
+                            </tr>
+                        </thead>
+                        <tbody style="color: var(--dark)">
+                            {% for lastorders in lastorders %}
+                            <tr>
+                                <td> {{productsxcategory.ProductName}} </td>
+                                <td> {{productsxcategory.QualityName}} </td>
+                                <td> {{productsxcategory.TotalQuantity}} </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
 
                 <!-- End of Reminders-->

@@ -17,6 +17,8 @@ from models.entities.Supplier import Supplier
 from models.entities.User import User
 from models.entities.Client import Client
 from models.entities.PurchaseOrder import PurchaseOrder
+from models.entities.LastOrders import LastOrders
+from models.entities.ProductxCategory import ProductxCategory
 
 app = Flask(__name__)
 
@@ -39,7 +41,7 @@ def load_user(id):
 def index():
     logged_user = current_user
     if logged_user.is_authenticated:
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('search_data'))
     else:
         return redirect(url_for('login'))    
 
@@ -52,7 +54,7 @@ def login():
         if logged_user is not None:
             if logged_user.password:
                 login_user(logged_user)
-                return redirect(url_for('dashboard'))
+                return redirect(url_for('search_data'))
             else:
                 flash('Contraseña invalida...')
                 return render_template('auth/login.html')
@@ -63,10 +65,45 @@ def login():
         return render_template('auth/login.html')
 
 
-@app.route('/inicio')
+@app.route('/inicio', methods=['GET', 'POST'])
 @login_required
-def dashboard():
-    return render_template('home.html')
+def search_data():
+    user_id = current_user.id
+    if request.method == "GET":
+        def execute_query(query):
+            cursor = db.cursor()
+            cursor.execute(query, (user_id,))
+            result = cursor.fetchone()
+            cursor.close()
+            return result[0] if result is not None else None
+
+        dato1 = execute_query("EXEC dbo.SEL_TOTAL_ORDERS @AccountId = ?")
+        dato2 = execute_query("EXEC dbo.SEL_TOTAL_AMOUNT_MONEY_ORDERS @AccountId = ?")
+        dato3 = execute_query("EXEC dbo.SEL_TOTAL_AMOUNT_KGS_ORDERS @AccountId = ?")
+    
+        query4 = "EXEC dbo.SEL_RECENT_PURCHASE_ORDERS @AccountId = ?"
+        cursor4 = db.cursor()
+        cursor4.execute(query4, (user_id,))
+        rows = cursor4.fetchall()
+        lastorders = []
+        for row in rows:
+            lastorder = LastOrders(row[0], row[1], row[2], row [3])
+            lastorders.append(lastorder)
+        #print(lastorders)
+        cursor4.close()
+        
+        query5 = "EXEC dbo.SEL_PRODUCTS_SELLED @AccountId = ?"
+        cursor5 = db.cursor()
+        cursor5.execute(query5, (user_id,))
+        rows2 = cursor5.fetchall()
+        productsxcategory = []
+        for row in rows2:
+            productsxcategory2 = ProductxCategory(row[0], row[1], row[2])
+            productsxcategory.append(productsxcategory2)
+        cursor5.close()
+        
+        return render_template('home.html', dato1=dato1, dato2=dato2, dato3=dato3, lastorders=lastorders, productsxcategory=productsxcategory)
+
 
 @app.route('/proveedores', methods=['GET', 'POST']) 
 @login_required
@@ -83,6 +120,19 @@ def proveedores():
         else:
             flash('Error al agregar proveedor','danger')
             return redirect(url_for('proveedores'))
+
+        
+@app.route('/cambiar_estado_proveedor', methods=['POST'])
+@login_required
+def cambiar_estado_proveedor():
+    suppliers_id = request.form['suppliers_id']
+    if ModelSupplier.updatesupplier(db, suppliers_id):
+        flash('Proveeor actualizado correctamente', 'success')
+    else:
+        flash('Error al actualizar proveedor', 'danger')
+    
+    return redirect(url_for('proveedores'))
+
         
 @app.route('/clientes', methods=['GET', 'POST']) 
 @login_required
@@ -99,6 +149,19 @@ def clientes():
         else:
             flash('Error al agregar cliente','danger')
             return redirect(url_for('clientes'))
+
+        
+@app.route('/cambiar_estado_cliente', methods=['POST'])
+@login_required
+def cambiar_estado_cliente():
+    cliente_id = request.form['cliente_id']
+    if ModelClient.updateclient(db, cliente_id):
+        flash('Cliente actualizado correctamente', 'success')
+    else:
+        flash('Error al actualizar cliente', 'danger')
+    
+    return redirect(url_for('clientes'))
+
         
 #metodos crud productos
 @app.route('/productos', methods=['GET', 'POST'])
@@ -115,6 +178,17 @@ def productos():
         else:
             flash('Error al agregar producto','danger')
             return redirect(url_for('productos'))
+        
+@app.route('/cambiar_estado_producto', methods=['POST'])
+@login_required
+def cambiar_estado_producto():
+    producto_id = request.form['product_id']
+    if ModelProduct.updateproduct(db, producto_id):
+        flash('Producto actualizado correctamente', 'success')
+    else:
+        flash('Error al actualizar producto', 'danger')
+    
+    return redirect(url_for('productos'))
 
 
 
