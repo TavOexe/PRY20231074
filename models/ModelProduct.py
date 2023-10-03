@@ -5,11 +5,11 @@ class ModelProduct():
     def get_all(self,db):
         try:
             cursor = db.cursor()
-            cursor.execute("SELECT id,name, description,image FROM Product")
+            cursor.execute("SELECT id,name, description,image, SKU, Estado FROM Product")
             rows = cursor.fetchall()
             products = []
             for row in rows:
-                product = Product(row[0], row[1], row[2], row[3])
+                product = Product(row[0], row[1], row[2], row[3], row[4], row[5])
                 products.append(product)
             return products
         except Exception as e:
@@ -19,10 +19,10 @@ class ModelProduct():
     def get_by_id(self,db,id):
         try:
             cursor = db.cursor()
-            cursor.execute("SELECT id,name, description,image FROM Product WHERE id = '{}' ".format(id))
+            cursor.execute("SELECT id,name, description,image, SKU, Estado FROM Product WHERE id = '{}' ".format(id))
             row = cursor.fetchone()
             if row is not None:
-                product = Product(row[0], row[1], row[2], row[3])
+                product = Product(row[0], row[1], row[2], row[3], row[4], row[5])
                 return product
             else:
                 return  None
@@ -34,7 +34,7 @@ class ModelProduct():
         try:
             if product.name != '' and product.description != '':  
                 cursor = db.cursor()
-                cursor.execute("INSERT INTO Product (name, description,image) VALUES ('{}','{}','{}')".format(product.name,product.description,product.image))
+                cursor.execute("INSERT INTO Product (name, description,image, SKU, Estado) VALUES ('{}','{}','{}', '{}', '{}')".format(product.name,product.description,product.image, product.SKU, "Activo"))
                 db.commit()
                 return True
         except Exception as e:

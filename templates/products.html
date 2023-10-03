@@ -107,7 +107,8 @@ Productos
                                 <th scope="col" onclick="sortTable(0)">Nombre</th>
                                 <th scope="col" onclick="sortTable(1)">Description</th>
                                 <th scope="col">Imagen</th>
-                                <th scope="col" onclick="sortTable(3)">Estado</th>
+                                <th scope="col" onclick="sortTabel(3)">SKU</th>
+                                <th scope="col" onclick="sortTable(4)">Estado</th>
                                 <th scope="col">Acciones</th>
                             </tr>
                         </thead>
@@ -120,6 +121,7 @@ Productos
                                 <td> {{products.name}} </td>
                                 <td> {{products.description}} </td>
                                 <td> <img src="{{products.image}}" width="50" height="50"  alt=""> </td>
+                                <td> {{products.SKU}} </td>
                                 <td> {{products.Estado}} </td>
                                 <td>
                                     <form action="/cambiar_estado_producto" method="post">
@@ -142,6 +144,11 @@ Productos
 
                 <form action="/productos" method="POST" style="color:var(--dark)">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="form-group">
+                        <label for="inputAddress2">SKU</label>
+                        <input type="text" class="form-control" name="sku" placeholder="VE-015986">
+                    </div>
+
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="inputEmail4"> Nombre del Producto </label>
@@ -156,7 +163,6 @@ Productos
                     <div class="form-group">
                         <label for="inputAddress2">Url de la Imagen</label>
                         <input type="url" class="form-control" name="image" placeholder="https://verdura.pe/img.png">
-
                     </div>
                     <div>
 
