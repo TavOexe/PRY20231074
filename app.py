@@ -151,6 +151,49 @@ def orden_compra():
             return redirect(url_for('orden_compra'))
       
 
+#MEOTODS PARA LA ASGINACION DE CALIDAD DE LAS ORDENES DE COMPRA
+@app.route('/orden/<string:id>', methods=['GET', 'POST'])
+@login_required
+def orden_compra_detalle(id):
+    if request.method == 'GET':
+        cursor = db.cursor()
+        cursor.execute(" SELECT p.Name , p.Image, op.amount, op.state, p.id FROM Product AS p JOIN orderXproducts AS op ON p.id = op.or_Product_Id WHERE op.purchase_order_Id =  '{}' and  CAST(op.state AS VARCHAR(255)) = 'pendiente'  ".format(id) )
+        products = cursor.fetchall()
+        cursor.execute("SELECT id, name FROM quality")
+        calidades = cursor.fetchall()
+        if products == []:
+            cursor.execute("UPDATE purchase_order SET state = 'Asignado' WHERE id = '{}'".format(id))
+            flash('Esta orden de compra no tiene productos por asignar','warning')
+            cursor.commit()
+            cursor.close()
+            return redirect(url_for('orden_compra'))
+        cursor.close()
+        return render_template('order.html', products=products, calidades=calidades, id = id)
+    if request.method == 'POST':
+        cursor = db.cursor()
+        producto_id = request.form['producto_id']
+        orden_id = request.form['orden_id']
+        fecha_actual = datetime.datetime.now()
+        print("producto_id: ", producto_id )
+        calidad_ids = request.form.getlist('calidad_id[]')
+        cantidades = request.form.getlist('cantidad[]')
+        print("calidad_ids: ", calidad_ids )
+        print("cantidades: ", cantidades )
+        try:
+            for calidad_id, cantidad in zip(calidad_ids, cantidades):
+                data = StockControl(0, producto_id, calidad_id, cantidad, fecha_actual, 0)
+                ModelStockControl.post(db, data)
+                if ModelStockControl.post(db, data):
+                    cursor.execute("UPDATE orderXproducts SET state = 'completado' WHERE purchase_order_Id = '{}' AND or_Product_Id = {}".format(orden_id, producto_id))
+                    flash('Producto agregado correctamente','success')
+                print("producto agregado correctamente" )
+            db.commit()
+        except Exception as e:
+            db.rollback()
+            flash('Error al procesar la orden: {}'.format(str(e)), 'danger')
+        finally:
+            cursor.close()
+        return redirect(url_for('orden_compra_detalle', id=orden_id))
 
 
 
