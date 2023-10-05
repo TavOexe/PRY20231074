@@ -2,7 +2,7 @@ from .entities.Supplier import Supplier
 
 class ModelSupplier():
     @classmethod
-    def get_all(self,db):
+    def get_all(cls,db):
         try:
             cursor = db.cursor()
             cursor.execute("SELECT id, ruc,name, lastname,email,cellphone, Estado FROM Supplier")

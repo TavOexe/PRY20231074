@@ -47,7 +47,7 @@ def load_user(id):
 def index():
     logged_user = current_user
     if logged_user.is_authenticated:
-        return redirect(url_for('search_data'))
+        return redirect(url_for('dashboard'))
     else:
         return redirect(url_for('login'))    
 
@@ -107,7 +107,7 @@ def proveedores():
         suppliers = ModelSupplier.get_all(db)
         return render_template('supplier.html', suppliers=suppliers)
     if request.method == 'POST':
-        supplier = Supplier(0, request.form['ruc'], request.form['name'], request.form['lastname'], request.form['email'], request.form['cellphone'])
+        supplier = Supplier(0, request.form['ruc'], request.form['name'], request.form['lastname'], request.form['email'], request.form['cellphone'], '')
         if ModelSupplier.post(db, supplier):
             flash('Proveedor agregado correctamente','success')
             return redirect(url_for('proveedores'))
@@ -136,7 +136,7 @@ def clientes():
         clients = ModelClient.get_all(db)
         return render_template('client.html', clients=clients)
     if request.method == 'POST':
-        client = Client(0, request.form['ruc'], request.form['name'], request.form['lastname'], request.form['address'], request.form['email'], request.form['cellphone'])
+        client = Client(0, request.form['ruc'], request.form['name'], request.form['lastname'], request.form['address'], request.form['email'], request.form['cellphone'],'')
         if ModelClient.post(db, client):
             flash('Cliente agregado correctamente','success')
             return redirect(url_for('clientes'))
