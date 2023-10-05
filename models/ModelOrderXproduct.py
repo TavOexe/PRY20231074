@@ -7,9 +7,9 @@ class ModelOrderXproduct():
             # Verificar si ya existe un registro para el mismo producto en la misma orden
             #cursor.execute("SELECT amount FROM orderXproducts WHERE purchase_order_Id = ? AND or_Product_Id = ?", (orden_id, producto_id))
             #existing_record = cursor.fetchone()
-
+            estado = 'pendiente'
             # Si no existe, inserta un nuevo registro
-            cursor.execute("INSERT INTO orderXproducts (purchase_order_Id, or_Product_Id, amount) VALUES (?, ?, ?)", (orden_id, producto_id, cantidad))
+            cursor.execute("INSERT INTO orderXproducts (purchase_order_Id, or_Product_Id, amount, state) VALUES (?, ?, ?, ?)", (orden_id, producto_id, cantidad, estado))
 
             db.commit()
             cursor.close()

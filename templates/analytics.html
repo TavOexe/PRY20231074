@@ -1,6 +1,6 @@
 {% extends 'base.html' %}}
 {% block title %}
-Clientes
+Analiticas - AG Inventario
 {% endblock %}
 {% block customCss %}
 <link rel="stylesheet" href="{{url_for('static', filename='css/home.css')}}">
@@ -17,13 +17,14 @@ Clientes
             <div class="logo-name"><span>AG</span>Inventario</div>
         </a>
         <ul class="side-menu">
-            <li ><a href="/inicio"><i class='bx bxs-dashboard'></i>Dashboard</a></li>
+            <li><a href="/inicio"><i class='bx bxs-dashboard'></i>Dashboard</a></li>
             <li><a href="/proveedores"><i class='bx bxs-dashboard'></i>Proveedores</a></li>
-            <li><a href="/ordenes_compra"><i class='bx bx-store-alt'></i>Ordenes Compra</a></li>
+            <li><a href="/productos"><i class='bx bxs-dashboard'></i>Productos </a></li>
+            <li><a href="/ordenes_compra"><i class='bx bx-store-alt'></i>Compras</a></li>
             <li><a href="/inventario"><i class='bx bx-store-alt'></i>Inventario</a></li>
-            <li><a href="/analytics"><i class='bx bx-analyse'></i>Analytics</a></li>
+            <li class="active"><a href="/estadisticas"><i class='bx bx-analyse'></i>Analytics</a></li>
             <li><a href="/ordenes_venta"><i class='bx bx-message-square-dots'></i>Ordenes Venta</a></li>
-            <li><a href="/clientes"><i class='bx bxs-dashboard'></i>Clientes</a></li>
+            <li ><a href="/clientes"><i class='bx bxs-dashboard'></i>Clientes</a></li>
             <li><a href="#"><i class='bx bx-cog'></i>Settings</a></li>
         </ul>
         <ul class="side-menu">
@@ -80,51 +81,71 @@ Clientes
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-person-fill" viewBox="0 0 16 16">
                         <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM11 8a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm2 5.755V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-.245S4 12 8 12s5 1.755 5 1.755z"/>
                     </svg>
-                    <span>Nuevo Cliente </span>
+                    <span>Generar reportes</span>
                 </a>
             </div>
 
             <!-- TABLA DEL SISTEMA -->
             <ul class="insights">
-                <table class="table" style="background-color: var(--light);">
-                    <thead  style="background-color:rgba(39, 110, 198, 0.79); color:azure" >
-                      <tr>
-                        <th scope="col">N°</th>
-                        <th scope="col">Productos</th>
-                        <th scope="col">Calidad</th>
-                        <th scope="col">Cantidad</th>
-                        <th scope="col">Fecha</th>
-                        <th scope="col">Unidades</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <th scope="row">1</th>
-                        <td>    </td>
-                        <td>    </td>
-                        <td>    </td>
-                        <td>    </td>
-                        <td>    </td>
-                      </tr>
-                      <tr>
-                        <th scope="row">2</th>
-                        <td>    </td>
-                        <td>    </td>
-                        <td>    </td>
-                      </tr>
-                      <tr>
-                        <th scope="row">3</th>
-                        <td>    </td>
-                        <td>    </td>
-                        <td>    </td>
-                      </tr>
-                      
-                    </tbody>
-                  </table>
+                <div class="container" style="background-color: var(--light); max-width: 500px;"  >
+                    <canvas id="myChart" width="200" height="200"></canvas>
+                </div>
+                
+              
+            </ul>
 
+            <ul class="insights"> 
+                <div class="container" style="background-color: var(--light);">
+                    <h1>Gráfico de Ventas</h1>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Mes</th>
+                                <th>Nombre</th>
+                                <th>Clase</th>
+                                <th>Cantidad</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in data %}
+                            <tr>
+                                <td>{{ item.mes }}</td>
+                                <td>{{ item.producto }}</td>
+                                <td>{{ item.name }}</td>
+                                <td>{{ item.cantidad }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <!-- Agrega un contenedor para el gráfico -->
+                    
+                </div>
             </ul>
             <!-- End of Insights -->
-
+            <ul class="insights" >
+                <div class="container mt-5" style="background-color: var(--light);">
+                    <h1>Chat con OpenAI</h1>
+                    <div class="chat-container" >
+                        {% if mensaje_usuario %}
+                            <div class="alert alert-primary" role="alert">
+                                Tú: {{ mensaje_usuario }}
+                            </div>
+                        {% endif %}
+                        {% if respuesta_openai %}
+                            <div class="alert alert-success" role="alert">
+                                Asistente: {{ respuesta_openai }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <form action="/obtener_respuesta" method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="mensaje_usuario" placeholder="Escribe tu mensaje">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Enviar</button>
+                    </form>
+                </div>
+            </ul>
             <!-- End of Reminders-->
 
             </div>
@@ -133,60 +154,37 @@ Clientes
 
     </div>
     <script>
-        const sideLinks = document.querySelectorAll('.sidebar .side-menu li a:not(.logout)');
-
-        sideLinks.forEach(item => {
-            const li = item.parentElement;
-            item.addEventListener('click', () => {
-                sideLinks.forEach(i => {
-                    i.parentElement.classList.remove('active');
-                })
-                li.classList.add('active');
-            })
+        // Obtén los datos de la tabla y guárdalos en arrays
+        var meses = [];
+        var cantidades = [];
+    
+        var dataRows = document.querySelectorAll('.insights table tbody tr');
+        dataRows.forEach(function(row) {
+            var cells = row.querySelectorAll('td');
+            meses.push(cells[0].textContent);
+            cantidades.push(parseInt(cells[3].textContent));
         });
-
-        const menuBar = document.querySelector('.content nav .bx.bx-menu');
-        const sideBar = document.querySelector('.sidebar');
-
-        menuBar.addEventListener('click', () => {
-            sideBar.classList.toggle('close');
-        });
-
-        const searchBtn = document.querySelector('.content nav form .form-input button');
-        const searchBtnIcon = document.querySelector('.content nav form .form-input button .bx');
-        const searchForm = document.querySelector('.content nav form');
-
-        searchBtn.addEventListener('click', function (e) {
-            if (window.innerWidth < 576) {
-                e.preventDefault;
-                searchForm.classList.toggle('show');
-                if (searchForm.classList.contains('show')) {
-                    searchBtnIcon.classList.replace('bx-search', 'bx-x');
-                } else {
-                    searchBtnIcon.classList.replace('bx-x', 'bx-search');
+    
+        // Configura los datos del gráfico
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: meses,
+                datasets: [{
+                    label: 'Cantidad de Ventas',
+                    data: cantidades,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)', // Color de fondo de las barras
+                    borderColor: 'rgba(75, 192, 192, 1)', // Color del borde de las barras
+                    borderWidth: 1 // Ancho del borde de las barras
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true // Empieza el eje Y desde cero
+                    }
                 }
-            }
-        });
-
-        window.addEventListener('resize', () => {
-            if (window.innerWidth < 768) {
-                sideBar.classList.add('close');
-            } else {
-                sideBar.classList.remove('close');
-            }
-            if (window.innerWidth > 576) {
-                searchBtnIcon.classList.replace('bx-x', 'bx-search');
-                searchForm.classList.remove('show');
-            }
-        });
-
-        const toggler = document.getElementById('theme-toggle');
-
-        toggler.addEventListener('change', function () {
-            if (this.checked) {
-                document.body.classList.add('dark');
-            } else {
-                document.body.classList.remove('dark');
             }
         });
     </script>

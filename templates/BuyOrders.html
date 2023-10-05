@@ -21,11 +21,11 @@ Orden de compra
             <li><a href="/inicio"><i class='bx bxs-dashboard'></i>Dashboard</a></li>
             <li><a href="/proveedores"><i class='bx bxs-dashboard'></i>Proveedores</a></li>
             <li><a href="/productos"><i class='bx bxs-dashboard'></i>Productos </a></li>
-            <li class="active"><a href="/ordenes_compra"><i class='bx bx-store-alt'></i>Ordenes Compra</a></li>
+            <li class="active"><a href="/ordenes_compra"><i class='bx bx-store-alt'></i>Compras</a></li>
             <li><a href="/inventario"><i class='bx bx-store-alt'></i>Inventario</a></li>
-            <li><a href="/analytics"><i class='bx bx-analyse'></i>Analytics</a></li>
+            <li><a href="/estadisticas"><i class='bx bx-analyse'></i>Analytics</a></li>
             <li><a href="/ordenes_venta"><i class='bx bx-message-square-dots'></i>Ordenes Venta</a></li>
-            <li><a href="/clientes"><i class='bx bxs-dashboard'></i>Vendedores</a></li>
+            <li><a href="/clientes"><i class='bx bxs-dashboard'></i>Clientes</a></li>
             <li><a href="#"><i class='bx bx-cog'></i>Settings</a></li>
         </ul>
         <ul class="side-menu">
@@ -94,13 +94,16 @@ Orden de compra
                         /
                         <li><a href="#" class="active">vista</a></li>
                     </ul>
+
                 </div>
             </div>
 
             <!-- TABLA DEL SISTEMA -->
             <ul class="insights">
+                
+
                 <div class="table-responsive fixed-height-table ">
-                    <table class="table" style="background-color: var(--light);">
+                    <table id="tablaOrdenes" class="table" style="background-color: var(--light);">
                         <thead class="table-header" style="background-color: var(--primary); color:var(--light)">
                             <tr>
                                 <th scope="col">N°</th>
@@ -127,9 +130,15 @@ Orden de compra
                                 <td> {{orders.comments}} </td>
                                 <td> {{orders.quantitylost}} </td>
                                 <td> {{orders.account_id}} </td>
-                                <td class="text-warning"> {{orders.state}}    </td>
+                                {% if orders.state == 'Pendiente' %}
+                                    <td class="text-warning"> {{orders.state}}  </td>
+                                {% else %}
+                                    <td class="text-success"> {{orders.state}}  </td>
+                                {% endif %}
+                                
+                              
                                 <td> {{orders.supplier_id}} </td>
-                                <td> <a href=""> Asignar Calidades </a> </td>
+                                <td> <a href="/orden/{{orders.id}}  "> Asignar Calidades </a> </td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -191,7 +200,7 @@ Orden de compra
                         </div>
                         
                     </div>
-                    <table>
+                    <table class="table">
                         <thead>
                             <tr>
                                 <th>Producto</th>
@@ -251,7 +260,7 @@ Orden de compra
             productosContainer.insertAdjacentHTML("beforeend", newRow);
         });
     </script>
-    
+
     <script>
         
         window.watsonAssistantChatOptions = {

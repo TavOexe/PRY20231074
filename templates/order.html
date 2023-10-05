@@ -1,6 +1,6 @@
 {% extends 'base.html' %}}
 {% block title %}
-Clientes
+Orden de compra
 {% endblock %}
 {% block customCss %}
 <link rel="stylesheet" href="{{url_for('static',filename='css/supplier.css')}}">
@@ -11,8 +11,6 @@ Clientes
 
 
 <body>
-
-
     <!-- Sidebar -->
     <div class="sidebar">
         <a href="/" class="logo">
@@ -23,11 +21,11 @@ Clientes
             <li><a href="/inicio"><i class='bx bxs-dashboard'></i>Dashboard</a></li>
             <li><a href="/proveedores"><i class='bx bxs-dashboard'></i>Proveedores</a></li>
             <li><a href="/productos"><i class='bx bxs-dashboard'></i>Productos </a></li>
-            <li><a href="/ordenes_compra"><i class='bx bx-store-alt'></i>Compras</a></li>
+            <li class="active"><a href="/ordenes_compra"><i class='bx bx-store-alt'></i>Compras</a></li>
             <li><a href="/inventario"><i class='bx bx-store-alt'></i>Inventario</a></li>
             <li><a href="/estadisticas"><i class='bx bx-analyse'></i>Analytics</a></li>
             <li><a href="/ordenes_venta"><i class='bx bx-message-square-dots'></i>Ordenes Venta</a></li>
-            <li class="active"><a href="/clientes"><i class='bx bxs-dashboard'></i>Clientes</a></li>
+            <li><a href="/clientes"><i class='bx bxs-dashboard'></i>Clientes</a></li>
             <li><a href="#"><i class='bx bx-cog'></i>Settings</a></li>
         </ul>
         <ul class="side-menu">
@@ -68,127 +66,126 @@ Clientes
                 </svg>
                 <a> {{current_user.name}} {{current_user.lastname}} </a>
                 {% if current_user.user_type_id == 1 %}
-                    <a >Analista</a>                    
+                <a>Analista</a>
                 {% endif %}
                 {% if current_user.user_type_id == 2 %}
-                    <a >Operario</a>                    
+                <a>Operario</a>
                 {% endif %}
             </a>
         </nav>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="alert alert-{{ messages[0][0] }}" role="alert">
-                    {{ messages[0][1] }}
-                </div>
-            {% endif %}
+        {% if messages %}
+        <div class="alert alert-{{ messages[0][0] }}" role="alert">
+            {{ messages[0][1] }}
+        </div>
+        {% endif %}
         {% endwith %}
 
         <!-- End of Navbar -->
         <main>
             <div class="header">
                 <div class="left">
-                    <h1>Vendedores</h1>
+                    <h1>Orden de compra N° </h1>
                     <ul class="breadcrumb">
                         <li><a href="#">
-                                Vendedores
+                                Orden
                             </a></li>
                         /
-                        <li><a href="#" class="active">vista</a></li>
+                        <li><a href="#" class="active">Asignaciones</a></li>
                     </ul>
                 </div>
             </div>
 
             <!-- TABLA DEL SISTEMA -->
             <ul class="insights">
-                <div class="table-responsive fixed-height-table ">
-                    <table id="proveedoresTable" class="table display" style="background-color: var(--light);">
-                        <thead class="table-header" style="background-color: var(--primary); color:var(--light)">
-                            <tr>
-                                <th scope="col">N°</th>
-                                <th scope="col">RUC</th>
-                                <th scope="col">Nombre</th>
-                                <th scope="col">Apellido</th>
-                                <th scope="col">Dirección</th>
-                                <th scope="col">Correo</th>
-                                <th scope="col">Telefono</th>
-                                <th scope="col">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody style="color: var(--dark)">
-                            {% for clients in clients %}
+                <div style="color:var(--dark)">
+                    <h1>Productos sin asignar de la Orden {{id}}</h1>
+                    <table class="table" style="background-color:var(--light)" id="tablaPapa">
+                        <tr class="table-header" style="background-color:var(--light); color:var(--dark)">
+                            <th>Producto</th>
+                            <th>Imagen</th>
+                            <th>Cantidad Total</th>
+                            <th>Calidades</th>
+                        </tr>
+                        {% for products in products %}
+                        <tr>
+                            {% if products[3] == 'pendiente' %}
+                            <td style="font-size: 16px; color:var(--dark)">{{ products[0] }}</td>
+                            <td><img width="50" height="50" src="{{ products[1] }}" alt=""></td>
+                            <td style="font-size: 16px; color:var(--dark)">{{ products[2] }}</td>
+                            <td>
+                                <form method="post" action="/orden/{{id}}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="orden_id" value="{{id}}">
+                                    <input type="hidden" name="producto_id" value="{{products[4]}}">
 
-
-                            <tr>
-                                <th scope="row" id="{{clients.id}}"> {{clients.id}}</th>
-                                <td> {{clients.ruc}} </td>
-                                <td> {{clients.name}} </td>
-                                <td> {{clients.lastname}} </td>
-                                <td> {{clients.address}}
-                                <td> {{clients.email}} </td>
-                                <td> {{clients.cellphone}} </td>
-                                <td> <a href=""> borrar </a> </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
+                                    <table>
+                                        <tr>
+                                            <th>Calidad</th>
+                                            <th>Cantidad</th>
+                                        </tr>
+                                        {% for calidades in calidades %}
+                                        <tr>
+                                            <td>{{ calidades[1] }}</td>
+                                            <td>
+                                                <input type="number" name="calidad_id[]" value="{{ calidades[0] }}"
+                                                    style="display:none;">
+                                                <input type="number" class="form-control" name="cantidad[]" value="0">
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </table>
+                                    <input type="submit" class="btn btn-sm btn-warning" value="Agregar">
+                                </form>
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
                     </table>
+
                 </div>
-
             </ul>
-            {% if current_user.user_type_id == 1 %}
+
             <!-- End of Insights -->
-            <h2 style="color:var(--dark)"> Agregar vendedor</h2>
+            <h2 style="color:var(--dark)"> </h2>
             <ul class="insights" style="background-color:var(--light)">
-
-                <form action="/clientes" method="POST" style="color:var(--dark)">
-                    <div class="form-group">
-                        <label> RUC </label>
-                        <input type="number" class="form-control" name="ruc" placeholder="101231241320">
-                    </div>
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="inputEmail4"> Nombres </label>
-                            <input type="text" class="form-control" name="name" placeholder="Gustavo">
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="inputPassword4">Apellidos</label>
-                            <input type="text" class="form-control" name="lastname" placeholder="Chavez">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="inputAddress2">Dirección</label>
-                        <input type="address" class="form-control" name="address" placeholder="Avenida Javier Prado 123">
-
-                        <label for="inputAddress2">Correo</label>
-                        <input type="email" class="form-control" name="email" placeholder="ejemplo@gmail.com">
-
-                        <label for="inputCity">Numero de telefono</label>
-                        <input type="number" class="form-control" name="cellphone" placeholder="1234567">
-
-                    </div>
-                    <div>
-
-                    </div>
-                    <button type="submit" class="btn btn-primary" id="agregarButton">Agregar</button>
-                </form>
             </ul>
-            {% endif %}
+
+
             <!-- End of Reminders-->
 
         </main>
 
     </div>
-
     <script>
-        $(document).ready(function() {
-          $('#proveedoresTable').DataTable();
+        document.addEventListener("DOMContentLoaded", function() {
+          const tablaPapa = document.getElementById("tablaPapa");
+          cantidadTotal = parseFloat(document.querySelector("#tablaPapa > tbody > tr:nth-child(2) > td:nth-child(3)").innerHTML);
+          const form = tablaPapa.querySelector("form");
+        
+          form.addEventListener("submit", function(event) {
+            event.preventDefault();
+        
+            const cantidadInputs = form.querySelectorAll("input[name='cantidad[]']");
+            let totalCantidad = 0;
+        
+            cantidadInputs.forEach(function(input) {
+              totalCantidad += parseFloat(input.value);
+            });
+        
+            if (totalCantidad !== cantidadTotal) {
+              alert("La suma de las cantidades debe ser igual a " + cantidadTotal + " KG.");
+            } else {
+              // Aquí puedes enviar el formulario si la validación es exitosa
+              form.submit();
+            }
+          });
         });
     </script>
 
     <script>
-        
+
         window.watsonAssistantChatOptions = {
             integrationID: "dee09281-19e9-4b5e-8a11-315967a9d32a", // The ID of this integration.
             region: "au-syd", // The region your integration is hosted in.
@@ -201,7 +198,7 @@ Clientes
             document.head.appendChild(t);
         });
     </script>
-    
+
 </body>
 
 {% endblock body %}

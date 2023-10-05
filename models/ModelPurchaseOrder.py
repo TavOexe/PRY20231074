@@ -5,7 +5,7 @@ class ModelPurchaseOrder():
     def get_all(self,db):
         try:
             cursor = db.cursor()
-            cursor.execute("Select po.id, po.entrydate, po.format, po.totalquantity, po.comments, po.quantitylost, a.name, po.state, s.name from purchase_order po inner join account a on po.account_id = a.id inner join supplier s on po.supplier_id = s.id ")
+            cursor.execute("Select po.id, po.entrydate, po.format, po.totalquantity, po.comments, po.quantitylost, a.name, po.state, s.name from purchase_order po inner join account a on po.account_id = a.id inner join supplier s on po.supplier_id = s.id order by entrydate Desc ")
             rows = cursor.fetchall()
             purchaseorders = []
             for row in rows:

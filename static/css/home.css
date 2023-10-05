@@ -20,6 +20,11 @@
     overflow-y: scroll;
 }
 
+.fixed-height-inventory{
+    max-height: 1000px;
+    overflow-y: scroll;
+}
+
 .table-header{
     position: sticky;
       top: 0;
