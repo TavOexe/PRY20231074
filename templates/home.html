@@ -127,8 +127,8 @@ Dashboard
                         <i class='bx bx-filter'></i>
                         <i class='bx bx-search'></i>
                     </div>
-                    <table>
-                        <thead>
+                    <table id="ordenesRecientes" class="table display">
+                        <thead class="table-header" style="background-color: var(--primary); color:var(--light)">
                             <tr>
                                 <th>Encargado</th>
                                 <th>N° orden </th>
@@ -169,33 +169,28 @@ Dashboard
                 <div class="reminders">
                     <div class="header">
                         <i class='bx bx-note'></i>
-                        <h3>Recordatorios</h3>
+                        <h3>Datos de Productos Vendidos</h3>
                         <i class='bx bx-filter'></i>
                         <i class='bx bx-plus'></i>
                     </div>
-                    <ul class="task-list">
-                        <li class="completed">
-                            <div class="task-title">
-                                <i class='bx bx-check-circle'></i>
-                                <p>Inicio de operaciones</p>
-                            </div>
-                            <i class='bx bx-dots-vertical-rounded'></i>
-                        </li>
-                        <li class="completed">
-                            <div class="task-title">
-                                <i class='bx bx-check-circle'></i>
-                                <p>Analisis de inventario</p>
-                            </div>
-                            <i class='bx bx-dots-vertical-rounded'></i>
-                        </li>
-                        <li class="not-completed">
-                            <div class="task-title">
-                                <i class='bx bx-x-circle'></i>
-                                <p>Ventas esperadas</p>
-                            </div>
-                            <i class='bx bx-dots-vertical-rounded'></i>
-                        </li>
-                    </ul>
+                    <table id="productosVendidos" class="table display">
+                        <thead class="table-header" style="background-color: var(--primary); color:var(--light)">
+                            <tr>
+                                <th scope="col">Producto</th>
+                                <th scope="col">Calidad</th>
+                                <th scope="col">Cifra Vendida</th>
+                            </tr>
+                        </thead>
+                        <tbody style="color: var(--dark)">
+                            {% for lastorders in lastorders %}
+                            <tr>
+                                <td> {{productsxcategory.ProductName}} </td>
+                                <td> {{productsxcategory.QualityName}} </td>
+                                <td> {{productsxcategory.TotalQuantity}} </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
 
                 <!-- End of Reminders-->

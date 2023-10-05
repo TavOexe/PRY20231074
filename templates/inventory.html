@@ -21,7 +21,12 @@ Productos
         </a>
         <ul class="side-menu">
             <li><a href="/inicio"><i class='bx bxs-dashboard'></i>Dashboard</a></li>
+            <li><a href="/inicio"><i class='bx bxs-dashboard'></i>Dashboard</a></li>
             <li><a href="/proveedores"><i class='bx bxs-dashboard'></i>Proveedores</a></li>
+            <li><a href="/productos"><i class='bx bxs-dashboard'></i>Productos </a></li>
+            <li><a href="/ordenes_compra"><i class='bx bx-store-alt'></i>Ordenes Compra</a></li>
+            <li class="active"><a href="/inventario"><i class='bx bx-store-alt'></i>Inventario</a></li>
+            <li><a href="/analytics"><i class='bx bx-analyse'></i>Analytics</a></li>
             <li ><a href="/productos"><i class='bx bxs-dashboard'></i>Productos </a></li>
             <li><a href="/ordenes_compra"><i class='bx bx-store-alt'></i>Compras</a></li>
             <li class="active"><a href="/inventario"><i class='bx bx-store-alt'></i>Inventario</a></li>
@@ -99,8 +104,48 @@ Productos
                 </div>
             </div>
 
+            <div>
+              <input type="text" id="filtroInput" placeholder="Inserte Nombre de Producto">
+              <button id="filtrarBtn" style="background-color: var(--light);">Filtrar</button>
+            </div>
+
             <!-- TABLA DEL SISTEMA -->
             <ul class="insights">
+                <table id="proveedoresTable" class="table" style="background-color: var(--light);">
+                    <thead  style="background-color:rgba(39, 110, 198, 0.79); color:azure" >
+                      <tr>
+                        <th scope="col">N°</th>
+                        <th scope="col" onclick="sortTable(0)">Productos</th>
+                        <th scope="col" onclick="sortTable(1)">Calidad</th>
+                        <th scope="col" onclick="sortTable(2)">Cantidad</th>
+                        <th scope="col">Fecha</th>
+                        <th scope="col" onclick="sortTable(4)">Unidades</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <th scope="row">1</th>
+                        <td>    </td>
+                        <td>    </td>
+                        <td>    </td>
+                        <td>    </td>
+                        <td>    </td>
+                      </tr>
+                      <tr>
+                        <th scope="row">2</th>
+                        <td>    </td>
+                        <td>    </td>
+                        <td>    </td>
+                      </tr>
+                      <tr>
+                        <th scope="row">3</th>
+                        <td>    </td>
+                        <td>    </td>
+                        <td>    </td>
+                      </tr>
+                      
+                    </tbody>
+                  </table>
                 <div class="table-responsive fixed-height-inventory">
                     <table class="table" style="background-color: var(--light);">
                         <thead class="table-header" style="background-color: var(--primary); color:var(--light)">
@@ -165,6 +210,86 @@ Productos
             t.src = "https://web-chat.global.assistant.watson.appdomain.cloud/versions/" + (window.watsonAssistantChatOptions.clientVersion || 'latest') + "/WatsonAssistantChatEntry.js";
             document.head.appendChild(t);
         });
+      </script>
+
+      <script>
+        function sortTable(n) {
+            var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            table = document.getElementById("proveedoresTable");
+            switching = true;
+            // Set the sorting direction to ascending:
+            dir = "asc";
+            /* Make a loop that will continue until no switching has been done: */
+            while (switching) {
+              // Start by saying: no switching is done:
+              switching = false;
+              rows = table.rows;
+              /* Loop through all table rows (except the first, which contains table headers): */
+              for (i = 1; i < (rows.length - 1); i++) {
+                // Start by saying there should be no switching:
+                shouldSwitch = false;
+                /* Get the two elements you want to compare, one from current row and one from the next: */
+                x = rows[i].getElementsByTagName("td")[n];
+                y = rows[i + 1].getElementsByTagName("td")[n];
+                /* Check if the two rows should switch place, based on the direction, asc or desc: */
+                if (dir == "asc") {
+                  if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                    // If so, mark as a switch and break the loop:
+                    shouldSwitch = true;
+                    break;
+                  } else
+                  if (Number(x.innerHTML) > Number(y.innerHTML)) {
+                    shouldSwitch = true;
+                    break;
+                  }
+                } else if (dir == "desc") {
+                  if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                    // If so, mark as a switch and break the loop:
+                    shouldSwitch = true;
+                    break;
+                  } else
+                  if (Number(x.innerHTML) < Number(y.innerHTML)) {
+                    shouldSwitch = true;
+                    break;
+                  }
+                }
+                console.log("Comparando x:", x.innerHTML);
+                console.log("Comparando y:", y.innerHTML);
+              }
+              if (shouldSwitch) {
+                /* If a switch has been marked, make the switch and mark that a switch has been done: */
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                // Each time a switch is done, increase this count by 1:
+                switchcount ++;
+              } else {
+                /* If no switching has been done AND the direction is "asc", set the direction to "desc" and run the while loop again. */
+                if (switchcount == 0 && dir == "asc") {
+                  dir = "desc";
+                  switching = true;
+                }
+              }
+            }
+          }
+      </script>
+
+      <script>
+        document.getElementById("filtrarBtn").addEventListener("click", function() {
+            var textoFiltro = document.getElementById("filtroInput").value.toLowerCase();
+            var tabla = document.querySelector("table");
+            var filas = tabla.querySelectorAll("tbody tr");
+            for (var i = 0; i < filas.length; i++) {
+                var fila = filas[i];
+                var columna = fila.querySelector("td:nth-child(2)"); // Cambia el índice según la columna que desees filtrar
+                var contenido = columna.textContent.toLowerCase();
+                if (contenido.includes(textoFiltro)) {
+                    fila.style.display = "table-row";
+                } else {
+                    fila.style.display = "none";
+                }
+            }
+        });
+      </script>  
     </script>
 </body>
 

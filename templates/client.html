@@ -106,12 +106,13 @@ Clientes
                         <thead class="table-header" style="background-color: var(--primary); color:var(--light)">
                             <tr>
                                 <th scope="col">N°</th>
-                                <th scope="col">RUC</th>
-                                <th scope="col">Nombre</th>
-                                <th scope="col">Apellido</th>
-                                <th scope="col">Dirección</th>
-                                <th scope="col">Correo</th>
-                                <th scope="col">Telefono</th>
+                                <th scope="col" onclick="sortTable(0)">RUC</th>
+                                <th scope="col" onclick="sortTable(1)">Nombre</th>
+                                <th scope="col" onclick="sortTable(2)">Apellido</th>
+                                <th scope="col" onclick="sortTable(3)">Dirección</th>
+                                <th scope="col" onclick="sortTable(4)">Correo</th>
+                                <th scope="col" onclick="sortTable(5)">Telefono</th>
+                                <th scope="col" onclick="sortTable(6)">Estado</th>
                                 <th scope="col">Acciones</th>
                             </tr>
                         </thead>
@@ -127,7 +128,20 @@ Clientes
                                 <td> {{clients.address}}
                                 <td> {{clients.email}} </td>
                                 <td> {{clients.cellphone}} </td>
-                                <td> <a href=""> borrar </a> </td>
+                                <td class="text-warning"> {{clients.Estado}} </td>
+                                <td>
+                                    <form action="/cambiar_estado_cliente" method="post">
+                                        <input type="hidden" name="cliente_id" value="{{ clients.id }}">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-link">
+                                            {% if clients.Estado == "Activo" %}
+                                                Desactivar
+                                            {% else %}
+                                                Activar
+                                            {% endif %}
+                                        </button>
+                                    </form>
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -143,29 +157,29 @@ Clientes
                 <form action="/clientes" method="POST" style="color:var(--dark)">
                     <div class="form-group">
                         <label> RUC </label>
-                        <input type="number" class="form-control" name="ruc" placeholder="101231241320">
+                        <input type="number" class="form-control" name="ruc" placeholder="101231241320" required maxlength="11">
                     </div>
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="inputEmail4"> Nombres </label>
-                            <input type="text" class="form-control" name="name" placeholder="Gustavo">
+                            <input type="text" class="form-control" name="name" placeholder="Gustavo" required>
                         </div>
                         <div class="form-group col-md-6">
                             <label for="inputPassword4">Apellidos</label>
-                            <input type="text" class="form-control" name="lastname" placeholder="Chavez">
+                            <input type="text" class="form-control" name="lastname" placeholder="Chavez" required>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="inputAddress2">Dirección</label>
-                        <input type="address" class="form-control" name="address" placeholder="Avenida Javier Prado 123">
+                        <input type="address" class="form-control" name="address" placeholder="Avenida Javier Prado 123" required>
 
                         <label for="inputAddress2">Correo</label>
-                        <input type="email" class="form-control" name="email" placeholder="ejemplo@gmail.com">
+                        <input type="email" class="form-control" name="email" placeholder="ejemplo@gmail.com" required>
 
                         <label for="inputCity">Numero de telefono</label>
-                        <input type="number" class="form-control" name="cellphone" placeholder="1234567">
+                        <input type="number" class="form-control" name="cellphone" placeholder="1234567" required>
 
                     </div>
                     <div>
@@ -200,6 +214,67 @@ Clientes
             t.src = "https://web-chat.global.assistant.watson.appdomain.cloud/versions/" + (window.watsonAssistantChatOptions.clientVersion || 'latest') + "/WatsonAssistantChatEntry.js";
             document.head.appendChild(t);
         });
+    </script>
+
+    <script>
+        function sortTable(n) {
+            var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            table = document.getElementById("proveedoresTable");
+            switching = true;
+            // Set the sorting direction to ascending:
+            dir = "asc";
+            /* Make a loop that will continue until no switching has been done: */
+            while (switching) {
+              // Start by saying: no switching is done:
+              switching = false;
+              rows = table.rows;
+              /* Loop through all table rows (except the first, which contains table headers): */
+              for (i = 1; i < (rows.length - 1); i++) {
+                // Start by saying there should be no switching:
+                shouldSwitch = false;
+                /* Get the two elements you want to compare, one from current row and one from the next: */
+                x = rows[i].getElementsByTagName("td")[n];
+                y = rows[i + 1].getElementsByTagName("td")[n];
+                /* Check if the two rows should switch place, based on the direction, asc or desc: */
+                if (dir == "asc") {
+                  if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                    // If so, mark as a switch and break the loop:
+                    shouldSwitch = true;
+                    break;
+                  } else
+                  if (Number(x.innerHTML) > Number(y.innerHTML)) {
+                    shouldSwitch = true;
+                    break;
+                  }
+                } else if (dir == "desc") {
+                  if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                    // If so, mark as a switch and break the loop:
+                    shouldSwitch = true;
+                    break;
+                  } else
+                  if (Number(x.innerHTML) < Number(y.innerHTML)) {
+                    shouldSwitch = true;
+                    break;
+                  }
+                }
+                console.log("Comparando x:", x.innerHTML);
+                console.log("Comparando y:", y.innerHTML);
+              }
+              if (shouldSwitch) {
+                /* If a switch has been marked, make the switch and mark that a switch has been done: */
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                // Each time a switch is done, increase this count by 1:
+                switchcount ++;
+              } else {
+                /* If no switching has been done AND the direction is "asc", set the direction to "desc" and run the while loop again. */
+                if (switchcount == 0 && dir == "asc") {
+                  dir = "desc";
+                  switching = true;
+                }
+              }
+            }
+          }
     </script>
     
 </body>

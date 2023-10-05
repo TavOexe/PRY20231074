@@ -11,8 +11,6 @@ Productos
 
 
 <body>
-
-
     <!-- Sidebar -->
     <div class="sidebar">
         <a href="/" class="logo">
@@ -102,13 +100,15 @@ Productos
             <!-- TABLA DEL SISTEMA -->
             <ul class="insights">
                 <div class="table-responsive fixed-height-table ">
-                    <table class="table" style="background-color: var(--light);">
+                    <table id="proveedoresTable" class="table" style="background-color: var(--light);">
                         <thead class="table-header" style="background-color: var(--primary); color:var(--light)">
                             <tr>
                                 <th scope="col">N°</th>
-                                <th scope="col">Nombre</th>
-                                <th scope="col">Description</th>
+                                <th scope="col" onclick="sortTable(0)">Nombre</th>
+                                <th scope="col" onclick="sortTable(1)">Description</th>
                                 <th scope="col">Imagen</th>
+                                <th scope="col" onclick="sortTabel(3)">SKU</th>
+                                <th scope="col" onclick="sortTable(4)">Estado</th>
                                 <th scope="col">Acciones</th>
                             </tr>
                         </thead>
@@ -116,12 +116,26 @@ Productos
                             {% for products in products %}
 
 
-                            <tr>
+                            <tr style="text-align:center">
                                 <th scope="row" id="{{products.id}}"> {{products.id}}</th>
                                 <td> {{products.name}} </td>
                                 <td> {{products.description}} </td>
                                 <td> <img src="{{products.image}}" width="50" height="50"  alt=""> </td>
-                                <td> <a href=""> borrar </a> </td>
+                                <td> {{products.SKU}} </td>
+                                <td class="text-warning"> {{products.Estado}} </td>
+                                <td>
+                                    <form action="/cambiar_estado_producto" method="post">
+                                        <input type="hidden" name="product_id" value="{{ products.id }}">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-link">
+                                            {% if products.Estado == "Activo" %}
+                                                Desactivar
+                                            {% else %}
+                                                Activar
+                                            {% endif %}
+                                        </button>
+                                    </form>
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -136,21 +150,25 @@ Productos
 
                 <form action="/productos" method="POST" style="color:var(--dark)">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="form-group">
+                        <label for="inputAddress2">SKU</label>
+                        <input type="text" class="form-control" name="sku" placeholder="VE-015986" required pattern="^.{8,12}$">
+                    </div>
+
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="inputEmail4"> Nombre del Producto </label>
-                            <input type="text" class="form-control" name="name" placeholder="papa">
+                            <input type="text" class="form-control" name="name" placeholder="papa" required>
                         </div>
                         <div class="form-group col-md-6">
                             <label for="inputPassword4">Descripcion</label>
-                            <input type="text" class="form-control" name="description" placeholder="Chavez">
+                            <input type="text" class="form-control" name="description" placeholder="Chavez" required>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="inputAddress2">Url de la Imagen</label>
-                        <input type="url" class="form-control" name="image" placeholder="https://verdura.pe/img.png">
-
+                        <input type="url" class="form-control" name="image" placeholder="https://verdura.pe/img.png" required>
                     </div>
                     <div>
 
@@ -179,6 +197,67 @@ Productos
             document.head.appendChild(t);
         });
     </script>
+
+    <script>
+        function sortTable(n) {
+            var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            table = document.getElementById("proveedoresTable");
+            switching = true;
+            // Set the sorting direction to ascending:
+            dir = "asc";
+            /* Make a loop that will continue until no switching has been done: */
+            while (switching) {
+              // Start by saying: no switching is done:
+              switching = false;
+              rows = table.rows;
+              /* Loop through all table rows (except the first, which contains table headers): */
+              for (i = 1; i < (rows.length - 1); i++) {
+                // Start by saying there should be no switching:
+                shouldSwitch = false;
+                /* Get the two elements you want to compare, one from current row and one from the next: */
+                x = rows[i].getElementsByTagName("td")[n];
+                y = rows[i + 1].getElementsByTagName("td")[n];
+                /* Check if the two rows should switch place, based on the direction, asc or desc: */
+                if (dir == "asc") {
+                  if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                    // If so, mark as a switch and break the loop:
+                    shouldSwitch = true;
+                    break;
+                  } else
+                  if (Number(x.innerHTML) > Number(y.innerHTML)) {
+                    shouldSwitch = true;
+                    break;
+                  }
+                } else if (dir == "desc") {
+                  if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                    // If so, mark as a switch and break the loop:
+                    shouldSwitch = true;
+                    break;
+                  } else
+                  if (Number(x.innerHTML) < Number(y.innerHTML)) {
+                    shouldSwitch = true;
+                    break;
+                  }
+                }
+                console.log("Comparando x:", x.innerHTML);
+                console.log("Comparando y:", y.innerHTML);
+              }
+              if (shouldSwitch) {
+                /* If a switch has been marked, make the switch and mark that a switch has been done: */
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                // Each time a switch is done, increase this count by 1:
+                switchcount ++;
+              } else {
+                /* If no switching has been done AND the direction is "asc", set the direction to "desc" and run the while loop again. */
+                if (switchcount == 0 && dir == "asc") {
+                  dir = "desc";
+                  switching = true;
+                }
+              }
+            }
+          }
+      </script>
 </body>
 
 {% endblock body %}

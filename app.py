@@ -47,7 +47,7 @@ def load_user(id):
 def index():
     logged_user = current_user
     if logged_user.is_authenticated:
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('search_data'))
     else:
         return redirect(url_for('login'))    
 
@@ -60,7 +60,7 @@ def login():
         if logged_user is not None:
             if logged_user.password:
                 login_user(logged_user)
-                return redirect(url_for('dashboard'))
+                return redirect(url_for('search_data'))
             else:
                 flash('Contraseña invalida...')
                 return render_template('auth/login.html')
@@ -71,7 +71,7 @@ def login():
         return render_template('auth/login.html')
 
 
-@app.route('/inicio')
+@app.route('/inicio', methods=['GET', 'POST'])
 @login_required
 def dashboard():
     cursor = db.cursor()
@@ -114,6 +114,19 @@ def proveedores():
         else:
             flash('Error al agregar proveedor','danger')
             return redirect(url_for('proveedores'))
+
+        
+@app.route('/cambiar_estado_proveedor', methods=['POST'])
+@login_required
+def cambiar_estado_proveedor():
+    suppliers_id = request.form['suppliers_id']
+    if ModelSupplier.updatesupplier(db, suppliers_id):
+        flash('Proveeor actualizado correctamente', 'success')
+    else:
+        flash('Error al actualizar proveedor', 'danger')
+    
+    return redirect(url_for('proveedores'))
+
         
 @app.route('/clientes', methods=['GET', 'POST']) 
 @login_required
@@ -130,6 +143,19 @@ def clientes():
         else:
             flash('Error al agregar cliente','danger')
             return redirect(url_for('clientes'))
+
+        
+@app.route('/cambiar_estado_cliente', methods=['POST'])
+@login_required
+def cambiar_estado_cliente():
+    cliente_id = request.form['cliente_id']
+    if ModelClient.updateclient(db, cliente_id):
+        flash('Cliente actualizado correctamente', 'success')
+    else:
+        flash('Error al actualizar cliente', 'danger')
+    
+    return redirect(url_for('clientes'))
+
         
 #metodos crud productos
 @app.route('/productos', methods=['GET', 'POST'])
@@ -146,6 +172,17 @@ def productos():
         else:
             flash('Error al agregar producto','danger')
             return redirect(url_for('productos'))
+        
+@app.route('/cambiar_estado_producto', methods=['POST'])
+@login_required
+def cambiar_estado_producto():
+    producto_id = request.form['product_id']
+    if ModelProduct.updateproduct(db, producto_id):
+        flash('Producto actualizado correctamente', 'success')
+    else:
+        flash('Error al actualizar producto', 'danger')
+    
+    return redirect(url_for('productos'))
 
 
 
