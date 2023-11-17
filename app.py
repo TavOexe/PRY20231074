@@ -60,7 +60,7 @@ def login():
         if logged_user is not None:
             if logged_user.password:
                 login_user(logged_user)
-                return redirect(url_for('search_data'))
+                return redirect(url_for('dashboard'))
             else:
                 flash('Contraseña invalida...')
                 return render_template('auth/login.html')
@@ -97,7 +97,19 @@ def dashboard():
     ordenes = cursor.fetchall()
     cursor.close()
 
-    return render_template('home.html', totalordenes=totalordenes, max_kilos=max_kilos, totalventas=totalventas, ordenes=ordenes)
+    cursor = db.cursor()
+    cursor.execute(""" 
+    Select P.name, Q.name as 'qname', Sum(CO.quantity) as 'cantidad'
+    From controlxoutput CO
+    Inner Join Product P On P.Id = CO. StockControl_Product_Id
+    Inner Join Quality Q On Q.Id = CO.StockControl_Quality_Id
+    Group By P.Name, Q.Name
+        """)
+    productos = cursor.fetchall()
+    cursor.close()
+
+
+    return render_template('home.html', totalordenes=totalordenes, max_kilos=max_kilos, totalventas=totalventas, ordenes=ordenes, productos=productos)
 
 @app.route('/proveedores', methods=['GET', 'POST']) 
 @login_required
@@ -165,7 +177,7 @@ def productos():
         products = ModelProduct.get_all(db)
         return render_template('products.html', products=products)
     if request.method == 'POST':
-        product = Product(0, request.form['name'], request.form['description'], request.form['image'])
+        product = Product(0, request.form['name'], request.form['description'], request.form['image'], request.form['sku'], 'Activo')
         if ModelProduct.post(db, product):
             flash('Producto agregado correctamente','success')
             return redirect(url_for('productos'))
@@ -250,7 +262,6 @@ def orden_compra_detalle(id):
         try:
             for calidad_id, cantidad in zip(calidad_ids, cantidades):
                 data = StockControl(0, producto_id, calidad_id, cantidad, fecha_actual, 0)
-                ModelStockControl.post(db, data)
                 if ModelStockControl.post(db, data):
                     cursor.execute("UPDATE orderXproducts SET state = 'completado' WHERE purchase_order_Id = '{}' AND or_Product_Id = {}".format(orden_id, producto_id))
                     flash('Producto agregado correctamente','success')
@@ -299,18 +310,19 @@ def orden_venta():
     if request.method == 'POST':
         #obtener la fecha actual
         #fecha_actual = datetime.datetime.now()
-        order = ExitOrder('',request.form['account_id'], request.form['client_id'], request.form['saledate'], request.form['comments'], request.form['totalprice'], request.form['address'] )
+        order = ExitOrder('',request.form['account_id'], request.form['client_id'], request.form['saledate'], request.form['comments'], 0, request.form['address'] )
       
         products_ids = request.form.getlist('producto_id[]')
         calidades_ids = request.form.getlist('calidades_id[]')
         cantidades = request.form.getlist('cantidad[]')
         precios = request.form.getlist('precio[]')
+        peso = 'Kg'
         print(order.id)
         print(products_ids)
         print(calidades_ids)
         print(cantidades)
         print(precios)
-        peso = 'Kg'
+       
         print(peso)
       
         if ModelExitOrder.post(db,order):
@@ -324,7 +336,8 @@ def orden_venta():
             flash('Orden agregada correctamente','success')
             return redirect(url_for('orden_venta'))
         else:
-            flash('Error al agregar orden','danger')
+            flash('Error al agregar orden ' ,'danger')
+            print(ModelExitOrder.post(db, order))
             return redirect(url_for('orden_venta'))
 
 
@@ -421,13 +434,11 @@ def api_usuario():
 @app.route('/api/ventas')
 def api_ventas():
     cursor = db.cursor()
-    cursor.execute("""SELECT EO.Id, EO.saledate , SUM(CO.quantity) As 'cantidadtotal', SUM(CO.total_product_price) As 'preciototal', 
-                            EO.comments, CONCAT(A.Name, ' ', A.LastName) As 'responsable', CONCAT(C.Name, ' ', C.LastName) As 'cliente' 
-                            FROM exit_order EO INNER JOIN controlXoutput CO 
-                            On CO.exit_order_Id = EO.Id INNER JOIN Account A 
-                            On A.Id = EO.Account_Id INNER JOIN Client C 
-                            On C.Id = EO.Client_Id 
-                            GROUP BY EO.Id, EO.saledate, EO.comments, CONCAT(A.Name, ' ', A.LastName), CONCAT(C.Name, ' ', C.LastName) order by eo.saledate desc
+    cursor.execute(""" Select CO.exit_order_Id, ex.saledate ,P.Name, Q.Name, CO.quantity, CO.kgprice, CO.format, CO.unity, CO.total_product_price
+                        From controlXoutput CO
+                        Inner Join Product P On P.Id = CO.StockControl_Product_Id
+                        Inner Join Quality Q On Q.Id = CO.StockControl_Quality_Id
+                        Inner Join exit_order ex on ex.Id = CO.exit_order_Id
                             """)
     ventas = cursor.fetchall()
     cursor.close()
@@ -438,11 +449,13 @@ def api_ventas():
         data.append({
             "id": venta[0],
             "fecha": venta[1],
-            "cantidadtotal": venta[2],
-            "preciototal": venta[3],
-            "comentarios": venta[4],
-            "responsable": venta[5],
-            "cliente": venta[6]
+            "producto": venta[2],
+            "calidad": venta[3],
+            "cantidad": venta[4],
+            "precio_kg": venta[5],
+            "formato": venta[6],
+            "unidad": venta[7],
+            "total": venta[8]
         })
     
     # Devolver la lista como una respuesta JSON
@@ -459,14 +472,14 @@ def status_401(error):
 def status_404(error):
     return "<h1> ERROR 404 </h1> ", 404
 
-API_KEY = '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'  # Reemplaza 'tu_api_key_aqui' con tu clave de API de OpenAI
+API_KEY = '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'  # Reemplaza 'tu_api_key_aqui' con tu clave de API de OpenAI
 API_URL = 'https://api.openai.com/v1/chat/completions'
 
 # Función para obtener una respuesta de OpenAI
 def obtener_respuesta_openai(mensaje_usuario, verdura,ventas):
     # Definir los parámetros para la conversación con OpenAI
     conversacion = [
-        {"role": "system", "content": "Tú eres un asistente de chat de un sistema agropecuario y consumes datos de un API de datos abiertos, tu objetivo es devolver respuestas concretas sobre la siguiente data que te muestro a continuación, tienes esta data de inventario: " + json.dumps(verdura) + " y esta data de ventas: " + json.dumps(ventas) + ""},
+        {"role": "system", "content": "Tú eres un asistente de chat de un sistema agropecuario y consumes datos de un API de datos abiertos, tu objetivo es devolver respuestas concretas sobre la siguiente data que te muestro a continuación, tienes esta data de inventario: " + json.dumps(verdura) + " y esta data de ventas: " + json.dumps(ventas) + " tu trabajo tambien consiste en realizar analisis y devolver respuesta solamente de los resultados, trata de ser bastante consiso en tus respuestas y cuando te pidan un analisis, devuelvelo de la siguiente manera: 'El analisis de la data es el siguiente: ' y luego la respuesta del analisis. En caso de no poder satisfacer una respuesta, devuelvelo de la siguiente manera: 'Estoy aun en fase de pruebas, no puedo responder a eso'"},
         {"role": "user", "content": mensaje_usuario}
     ]
 
@@ -488,11 +501,12 @@ def obtener_respuesta_openai(mensaje_usuario, verdura,ventas):
     else:
         print("Error al comunicarse con la API de OpenAI. Código de estado:", response.status_code)
         print(response.text)
-        return None
+        error = "Error al comunicarse con la API de OpenAI. Código de estado:", response.status_code
+        return error
 
 # Consumir la API local de almacenamiento de verduras
 def obtener_datos_verdura():
-    url_local_api = 'http://192.168.1.15:4000/api/almacen'
+    url_local_api = 'http://127.0.0.1:4000/api/almacen'
     try:
         response = requests.get(url_local_api)
         response.raise_for_status()  # Lanzar una excepción en caso de error HTTP
@@ -504,7 +518,7 @@ def obtener_datos_verdura():
     return verdura
 
 def obtener_datos_ventas():
-    url_local_api = 'http://192.168.1.15:4000/api/ventas'
+    url_local_api = 'http://127.0.0.1:4000/api/ventas'
     try:
         response = requests.get(url_local_api)
         response.raise_for_status()  # Lanzar una excepción en caso de error HTTP
@@ -521,5 +535,5 @@ if __name__ == '__main__':
     #csrf.init_app(app)
     app.register_error_handler(401, status_401)
     app.register_error_handler(404, status_404)
-    app.run(debug=True, port=4000,host="0.0.0.0")
+    app.run(debug=False, port=4000)
 

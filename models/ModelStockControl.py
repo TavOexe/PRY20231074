@@ -24,6 +24,8 @@ class ModelStockControl():
                 result = cursor.fetchone()
                 if result is not None:
                     cursor.execute("UPDATE stock_control SET quantity = quantity + ? WHERE product_id = ? AND quality_id = ?", (stockcontrol.quantity, stockcontrol.product_id, stockcontrol.quality_id))
+
+                    print("UPDATE stock_control SET quantity = quantity + ? WHERE product_id = ? AND quality_id = ?", (stockcontrol.quantity, stockcontrol.product_id, stockcontrol.quality_id))
                 else:
                     cursor.execute("INSERT INTO stock_control (product_id, quality_id, quantity, date, unity) VALUES (?, ?, ?, ?, ?)", (stockcontrol.product_id, stockcontrol.quality_id, stockcontrol.quantity, stockcontrol.date, stockcontrol.unity))
                 db.commit()

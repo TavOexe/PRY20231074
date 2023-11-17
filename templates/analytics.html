@@ -14,17 +14,17 @@ Analiticas - AG Inventario
     <div class="sidebar">
         <a href="/" class="logo">
             <i class='bx bx-code-alt'></i>
-            <div class="logo-name"><span>AG</span>Inventario</div>
+            <div class="logo-name"><span>AG</span>Inventory</div>
         </a>
         <ul class="side-menu">
             <li><a href="/inicio"><i class='bx bxs-dashboard'></i>Dashboard</a></li>
-            <li><a href="/proveedores"><i class='bx bxs-dashboard'></i>Proveedores</a></li>
-            <li><a href="/productos"><i class='bx bxs-dashboard'></i>Productos </a></li>
+            <li><a href="/proveedores"><i class='bx bi-person-add'></i>Proveedores</a></li>
+            <li><a href="/productos"><i class='bx bi-basket-fill'></i>Productos </a></li>
             <li><a href="/ordenes_compra"><i class='bx bx-store-alt'></i>Compras</a></li>
-            <li><a href="/inventario"><i class='bx bx-store-alt'></i>Inventario</a></li>
+            <li><a href="/inventario"><i class='bx bi-box-seam-fill'></i>Inventario</a></li>
             <li class="active"><a href="/estadisticas"><i class='bx bx-analyse'></i>Analytics</a></li>
-            <li><a href="/ordenes_venta"><i class='bx bx-message-square-dots'></i>Ordenes Venta</a></li>
-            <li ><a href="/clientes"><i class='bx bxs-dashboard'></i>Clientes</a></li>
+            <li><a href="/ordenes_venta"><i class='bx bi-shop'></i>Ventas </a></li>
+            <li ><a href="/clientes"><i class='bx bi-person-fill-down'></i>Clientes</a></li>
             <li><a href="#"><i class='bx bx-cog'></i>Settings</a></li>
         </ul>
         <ul class="side-menu">
@@ -56,101 +56,87 @@ Analiticas - AG Inventario
                 <span class="count">12</span>
             </a>
             <a href="#" class="profile">
-                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
+                    class="bi bi-person-circle" viewBox="0 0 16 16">
                     <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"></path>
-                    <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"></path>
-                  </svg>
-                <a > {{current_user.fullname}}</a>
+                    <path fill-rule="evenodd"
+                        d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z">
+                    </path>
+                </svg>
+                <a> {{current_user.name}} {{current_user.lastname}} </a>
+                {% if current_user.user_type_id == 1 %}
+                    <a >Analista</a>                    
+                {% endif %}
+                {% if current_user.user_type_id == 2 %}
+                    <a >Operario</a>                    
+                {% endif %}
             </a>
         </nav>
 
         <!-- End of Navbar -->
-        <main>
-            <div class="header">
-                <div class="left">
-                    <h1>Analytics</h1>
-                    <ul class="breadcrumb">
-                        <li><a href="#">
-                                Clientes
-                            </a></li>
-                        /
-                        <li><a href="#" class="active">vista</a></li>
-                    </ul>
-                </div>
-                <a href="" class="report">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-person-fill" viewBox="0 0 16 16">
-                        <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM11 8a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm2 5.755V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-.245S4 12 8 12s5 1.755 5 1.755z"/>
-                    </svg>
-                    <span>Generar reportes</span>
-                </a>
-            </div>
-
-            <!-- TABLA DEL SISTEMA -->
-            <ul class="insights">
-                <div class="container" style="background-color: var(--light); max-width: 500px;"  >
-                    <canvas id="myChart" width="200" height="200"></canvas>
-                </div>
-                
-              
-            </ul>
-
-            <ul class="insights"> 
-                <div class="container" style="background-color: var(--light);">
-                    <h1>Gráfico de Ventas</h1>
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Mes</th>
-                                <th>Nombre</th>
-                                <th>Clase</th>
-                                <th>Cantidad</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for item in data %}
-                            <tr>
-                                <td>{{ item.mes }}</td>
-                                <td>{{ item.producto }}</td>
-                                <td>{{ item.name }}</td>
-                                <td>{{ item.cantidad }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                    <!-- Agrega un contenedor para el gráfico -->
-                    
-                </div>
-            </ul>
-            <!-- End of Insights -->
-            <ul class="insights" >
-                <div class="container mt-5" style="background-color: var(--light);">
-                    <h1>Chat con OpenAI</h1>
-                    <div class="chat-container" >
-                        {% if mensaje_usuario %}
-                            <div class="alert alert-primary" role="alert">
-                                Tú: {{ mensaje_usuario }}
-                            </div>
-                        {% endif %}
-                        {% if respuesta_openai %}
-                            <div class="alert alert-success" role="alert">
-                                Asistente: {{ respuesta_openai }}
-                            </div>
-                        {% endif %}
+        <main style="display: flex;">
+            <!-- Columna del Gráfico y la Tabla (Izquierda) -->
+            <div class="chart-table-column" style="flex: 1;">
+                <ul class="insights">
+                    <div class="container" style="background-color: var(--light); max-width: 500px;">
+                        <canvas id="myChart" width="200" height="200"></canvas>
+                        <h1>Gráfico de Ventas</h1>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Mes</th>
+                                    <th>Nombre</th>
+                                    <th>Clase</th>
+                                    <th>Cantidad</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in data %}
+                                <tr>
+                                    <td>{{ item.mes }}</td>
+                                    <td>{{ item.producto }}</td>
+                                    <td>{{ item.name }}</td>
+                                    <td>{{ item.cantidad }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
-                    <form action="/obtener_respuesta" method="POST">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <div class="form-group">
-                            <input type="text" class="form-control" name="mensaje_usuario" placeholder="Escribe tu mensaje">
-                        </div>
-                        <button type="submit" class="btn btn-primary">Enviar</button>
-                    </form>
-                </div>
-            </ul>
-            <!-- End of Reminders-->
-
+                </ul>
             </div>
-
+        
+            <!-- Columna del Chatbot (Derecha) -->
+            <div class="chatbot-column" style="flex: 1; background-color: #f1f1f1; padding: 20px;">
+                <ul class="insights card">
+                    <div class="container">
+                        <h1>Chat con AgroBot</h1>
+                        <div class="chat-container">
+                            {% if mensaje_usuario %}
+                                <div class="chat-message alert alert-primary">
+                                    Tú: {{ mensaje_usuario }}
+                                </div>
+                            {% endif %}
+                            {% if respuesta_openai %}
+                               
+                                <div class="chat-message alert alert-success">
+                                     <i class="bx bx-analyse"></i>
+                                    Asistente: {{ respuesta_openai }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <form action="/obtener_respuesta" method="POST">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="mensaje_usuario" placeholder="Escribe tu mensaje">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Enviar</button>
+                        </form>
+                    </div>
+                </ul>
+            </div>
         </main>
+        
+        
 
     </div>
     <script>

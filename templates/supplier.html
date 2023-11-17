@@ -17,17 +17,17 @@ Proveedores
     <div class="sidebar">
         <a href="/" class="logo">
             <i class='bx bx-code-alt'></i>
-            <div class="logo-name"><span>AG</span>Inventario</div>
+            <div class="logo-name"><span>AG</span>Inventory</div>
         </a>
         <ul class="side-menu">
             <li><a href="/inicio"><i class='bx bxs-dashboard'></i>Dashboard</a></li>
-            <li class="active"><a href="/proveedores"><i class='bx bxs-dashboard'></i>Proveedores</a></li>
-            <li><a href="/productos"><i class='bx bxs-dashboard'></i>Productos </a></li>
+            <li  class="active"><a href="/proveedores"><i class='bx bi-person-add'></i>Proveedores</a></li>
+            <li><a href="/productos"><i class='bx bi-basket-fill'></i>Productos </a></li>
             <li><a href="/ordenes_compra"><i class='bx bx-store-alt'></i>Compras</a></li>
-            <li><a href="/inventario"><i class='bx bx-store-alt'></i>Inventario</a></li>
+            <li><a href="/inventario"><i class='bx bi-box-seam-fill'></i>Inventario</a></li>
             <li><a href="/estadisticas"><i class='bx bx-analyse'></i>Analytics</a></li>
-            <li><a href="/ordenes_venta"><i class='bx bx-message-square-dots'></i>Ordenes Venta</a></li>
-            <li><a href="/clientes"><i class='bx bxs-dashboard'></i>Clientes</a></li>
+            <li><a href="/ordenes_venta"><i class='bx bi-shop'></i>Ventas </a></li>
+            <li ><a href="/clientes"><i class='bx bi-person-fill-down'></i>Clientes</a></li>
             <li><a href="#"><i class='bx bx-cog'></i>Settings</a></li>
         </ul>
         <ul class="side-menu">
@@ -111,7 +111,7 @@ Proveedores
                                 <th scope="col" onclick="sortTable(2)">Apellido</th>
                                 <th scope="col" onclick="sortTable(3)">Correo</th>
                                 <th scope="col" onclick="sortTable(4)">Telefono</th>
-                                <th scope="col" onclick="sortTable(4)">Estado</th>
+                                <th scope="col" onclick="">Estado</th>
                                 <th scope="col">Acciones</th>
                             </tr>
                         </thead>
@@ -126,7 +126,11 @@ Proveedores
                                 <td> {{suppliers.lastname }} </td>
                                 <td> {{suppliers.email}} </td>
                                 <td> {{suppliers.cellphone}} </td>
-                                <td class="text-warning"> {{suppliers.Estado}} </td>
+                                {% if suppliers.Estado == "Activo" %}
+                                            <td class="text-success"> {{suppliers.Estado}} </td>
+                                            {% else %}
+                                            <td class="text-warning"> {{suppliers.Estado}} </td>
+                                            {% endif %}
                                 <td>
                                     <form action="/cambiar_estado_proveedor" method="post">
                                         <input type="hidden" name="suppliers_id" value="{{ suppliers.id }}">

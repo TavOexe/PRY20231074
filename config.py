@@ -3,13 +3,13 @@ class Config:
 
 class DevelopmentConfig (Config):
    DEBUG = True
-   DRIVER = 'SQL Server'
-   SERVER = "DESKTOP-NT6FMGV\SQLEXPRESS"
+   DRIVER = 'ODBC Driver 17 for SQL Server'
+   SERVER = "agroserver.database.windows.net"
    DATABASE = "agrodb"
-    #uid = 'gmanuser'
-    #pwd = '#Gc949194518'
+   uid = 'gmanuser'
+   pwd = '#Gc949194518'
     
-   connection_string = f'DRIVER={DRIVER};SERVER={SERVER};DATABASE={DATABASE};'
+   connection_string = f'DRIVER={DRIVER};SERVER={SERVER};DATABASE={DATABASE};UID={uid};PWD={pwd}'
     
 
 config = {
