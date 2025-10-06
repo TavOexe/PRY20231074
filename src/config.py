@@ -7,7 +7,7 @@ class DevelopmentConfig (Config):
    SERVER = "agroserver.database.windows.net"
    DATABASE = "agrodb"
    uid = 'gmanuser'
-   pwd = '#Gc949194518'
+   pwd = ''
     
    connection_string = f'DRIVER={DRIVER};SERVER={SERVER};DATABASE={DATABASE};UID={uid};PWD={pwd}'
     
@@ -25,7 +25,7 @@ config = {
 #     SERVER = 'LAPTOP-20OHRHFA'
 #     DATABASE = 'TP2_Test'
 #     #uid = 'gmanuser'
-#     #pwd = '#Gc949194518'
+#     #pwd = ''
 #     connection_string = f"""DRIVER={DRIVER};SERVER={SERVER};DATABASE={DATABASE};Trusted_Connection=yes"""
     
 
